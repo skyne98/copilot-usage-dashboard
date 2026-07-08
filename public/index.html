@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Copilot Usage Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>" />
+</head>
+<body>
+  <div class="wrap">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">🚀</div>
+        <div>
+          <h1>Copilot Usage Dashboard</h1>
+          <p>GitHub Copilot Enterprise — team &amp; per-user metrics</p>
+        </div>
+      </div>
+      <button class="icon-btn" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">🌙</button>
+    </header>
+
+    <!-- Controls -->
+    <div class="controls">
+      <div class="field">
+        <label for="scope">Scope</label>
+        <select id="scope">
+          <option value="enterprise">Enterprise</option>
+          <option value="org">Organization</option>
+        </select>
+      </div>
+      <div class="field" id="orgField">
+        <label for="org">Organization</label>
+        <select id="org"><option value="">—</option></select>
+      </div>
+      <button class="btn-primary" id="fetchBtn">
+        <span class="btn-label">Fetch usage</span>
+      </button>
+    </div>
+
+    <!-- Banners -->
+    <div class="banner demo" id="demoBanner">
+      <span>📊</span><div><b>Demo data.</b> <span id="demoReason">No GitHub token configured — showing sample data so you can explore the dashboard.</span></div>
+    </div>
+    <div class="banner error" id="errorBanner"><span>⚠️</span><div id="errorMsg"></div></div>
+
+    <!-- ================= OVERVIEW VIEW ================= -->
+    <div id="overviewView">
+      <!-- Tier 1: team overview -->
+      <section class="section" id="kpiSection">
+        <h2>Team overview <span id="metaLabel" class="muted"></span></h2>
+        <div class="grid kpis" id="kpiGrid"></div>
+      </section>
+
+      <section class="section">
+        <div class="grid charts-2">
+          <div class="card">
+            <h3>Active &amp; engaged users</h3>
+            <p class="card-sub">Daily, over the reporting window</p>
+            <div id="usersChart"></div>
+            <div class="chart-legend" id="usersLegend"></div>
+          </div>
+          <div class="card">
+            <h3>Lines accepted &amp; acceptance rate</h3>
+            <p class="card-sub">Suggestions accepted per day</p>
+            <div id="linesChart"></div>
+            <div class="chart-legend" id="linesLegend"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="grid charts-3">
+          <div class="card">
+            <h3>Feature mix</h3>
+            <p class="card-sub">Where usage happens</p>
+            <div id="featureDonut"></div>
+          </div>
+          <div class="card">
+            <h3>Top models</h3>
+            <p class="card-sub">By engaged users</p>
+            <div id="modelBars"></div>
+          </div>
+          <div class="card">
+            <h3>Top editors</h3>
+            <p class="card-sub">By engaged users</p>
+            <div id="editorBars"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="card">
+          <h3>Top languages</h3>
+          <p class="card-sub">Acceptances &amp; acceptance rate</p>
+          <div id="languageBars"></div>
+        </div>
+      </section>
+
+      <!-- Tier 2: individual users -->
+      <section class="section" id="usersSection">
+        <h2>Individual users</h2>
+        <div class="users-toolbar">
+          <div class="search"><input id="userSearch" type="search" placeholder="Search users by name or login…" /></div>
+          <div class="field">
+            <select id="userSort">
+              <option value="tokens">Sort: Tokens used</option>
+              <option value="activity">Sort: Most active</option>
+              <option value="acceptance">Sort: Acceptance rate</option>
+              <option value="lines">Sort: Lines accepted</option>
+              <option value="name">Sort: Name</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid user-grid" id="userGrid"></div>
+        <p class="empty hidden" id="usersEmpty"></p>
+      </section>
+    </div>
+
+    <!-- ================= USER DETAIL VIEW ================= -->
+    <div id="detailView" class="hidden"></div>
+
+    <footer>
+      Data via the <a href="https://docs.github.com/en/rest/copilot/copilot-metrics" target="_blank" rel="noopener">GitHub Copilot Metrics API</a>.
+      Per-user detail is derived from the daily report exports.
+    </footer>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

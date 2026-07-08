@@ -1,0 +1,16 @@
+{
+  "name": "github-copilot-usage-dashboard",
+  "version": "1.0.0",
+  "description": "A simple, modern dashboard for GitHub Copilot (Enterprise) usage metrics — team overview, per-user stats, and per-user detail views.",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

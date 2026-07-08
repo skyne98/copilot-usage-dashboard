@@ -1,0 +1,23 @@
+{
+  "server": {
+    "host": "127.0.0.1",
+    "port": 3000
+  },
+  "github": {
+    "//token": "PAT with Copilot metrics access. Enterprise: 'manage_billing:copilot' OR 'read:enterprise' (fine-grained: View Enterprise Copilot Metrics). Org: 'read:org'. Leave empty to run on demo data.",
+    "token": "",
+    "apiBaseUrl": "https://api.github.com",
+    "apiVersion": "2022-11-28"
+  },
+  "targets": {
+    "//": "Set 'enterprise' and/or 'organizations'. Copilot metrics need >=5 active members or the API returns empty.",
+    "enterprise": "",
+    "organizations": [],
+    "teams": []
+  },
+  "defaults": {
+    "scope": "enterprise",
+    "days": 28
+  },
+  "useSampleDataFallback": true
+}
