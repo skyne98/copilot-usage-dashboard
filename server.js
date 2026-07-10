@@ -52,6 +52,11 @@ async function getData(scope, org) {
       console.warn('[users] per-user report unavailable:', e.message);
     }
 
+    // ai_credits_used is per-user only; roll it up for the overview KPI.
+    overview.kpis.aiCredits = users.reduce((a, u) => a + (u.aiCredits || 0), 0);
+    meta.includedCreditsPerUser = 3900;
+    meta.creditUsd = 0.01;
+
     const data = { source: 'live', meta, overview, users, usersDegraded: users.length === 0 };
     liveCache.set(key, { at: Date.now(), data });
     return data;

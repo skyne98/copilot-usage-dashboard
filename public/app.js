@@ -9,7 +9,7 @@ const state = {
   users: [],
   source: null,
   search: '',
-  sort: 'tokens',
+  sort: 'credits',
 };
 
 // ---------- theme ----------
@@ -36,6 +36,11 @@ function scopeQuery() {
   return `scope=${scope}${scope === 'org' && org ? `&org=${encodeURIComponent(org)}` : ''}`;
 }
 function showBanner(id, show) { el(id).classList.toggle('show', show); }
+// AI credits → USD (1 credit = $0.01). Compact for large amounts.
+const usd = credits => {
+  const d = (Number(credits) || 0) * (state.meta?.creditUsd ?? 0.01);
+  return d >= 1000 ? '$' + (d / 1000).toFixed(1) + 'k' : '$' + d.toFixed(d < 10 ? 2 : 0);
+};
 function setError(msg) { el('errorMsg').textContent = msg; showBanner('errorBanner', !!msg); }
 
 // ---------- init ----------
@@ -108,7 +113,7 @@ function renderOverview() {
   const k = o.kpis;
   const kpis = [
     { label: 'Active users', value: fmt(k.activeUsers), sub: `${k.engagedUsers} engaged` },
-    { label: 'Tokens used', value: fmt(k.tokensUsed || 0), sub: 'premium requests' },
+    { label: 'AI credits used', value: fmt(k.aiCredits || 0), sub: `≈ ${usd(k.aiCredits || 0)} · AIC` },
     { label: 'Acceptance rate', value: k.acceptanceRate + '%', sub: `${fmt(k.totalAcceptances)} accepted` },
     { label: 'Lines accepted', value: fmt(k.linesAccepted), sub: `of ${fmt(k.totalSuggestions)} suggestions` },
     { label: 'IDE chats', value: fmt(k.ideChats), sub: 'chat interactions' },
@@ -153,7 +158,7 @@ function sortedFilteredUsers() {
   let list = state.users.filter(u =>
     !state.search || u.login.toLowerCase().includes(state.search) || (u.name || '').toLowerCase().includes(state.search));
   const cmp = {
-    tokens: (a, b) => (b.tokensUsed || 0) - (a.tokensUsed || 0),
+    credits: (a, b) => (b.aiCredits || 0) - (a.aiCredits || 0),
     activity: (a, b) => b.activeDays - a.activeDays,
     acceptance: (a, b) => b.acceptanceRate - a.acceptanceRate,
     lines: (a, b) => b.linesAccepted - a.linesAccepted,
@@ -188,7 +193,7 @@ function renderUsers() {
       </div>
       ${sparkline(u.activitySeries || [], { width: 236, height: 34 })}
       <div class="u-metrics">
-        <div class="u-metric"><div class="m-v">${fmt(u.tokensUsed || 0)}</div><div class="m-l">tokens</div></div>
+        <div class="u-metric"><div class="m-v">${fmt(u.aiCredits || 0)}</div><div class="m-l">AI credits</div></div>
         <div class="u-metric"><div class="m-v">${u.activeDays}/${u.windowDays}</div><div class="m-l">active days</div></div>
         <div class="u-metric"><div class="m-v">${u.acceptanceRate}%</div><div class="m-l">accept rate</div></div>
       </div>
@@ -235,10 +240,10 @@ function renderDetail(u) {
         <div class="d-sub">@${u.login}${u.team ? ' · ' + u.team : ''} · <span class="badge ${u.status}">${u.status}</span></div>
       </div>
       <div class="detail-stats">
-        <div class="ds"><div class="v">${fmt(u.tokensUsed || 0)}</div><div class="l">Tokens used</div></div>
+        <div class="ds"><div class="v">${fmt(u.aiCredits || 0)}</div><div class="l">AI credits · ${usd(u.aiCredits || 0)}</div></div>
+        <div class="ds"><div class="v">${u.includedCredits ? Math.round(((u.aiCredits || 0) / u.includedCredits) * 100) + '%' : '—'}</div><div class="l">of allowance</div></div>
         <div class="ds"><div class="v">${u.activeDays}/${u.windowDays}</div><div class="l">Active days</div></div>
         <div class="ds"><div class="v">${u.acceptanceRate}%</div><div class="l">Accept rate</div></div>
-        <div class="ds"><div class="v">${fmt(u.linesAccepted)}</div><div class="l">Lines accepted</div></div>
         <div class="ds"><div class="v">${fmt(u.chats)}</div><div class="l">Chats</div></div>
       </div>
     </div>
@@ -255,7 +260,7 @@ function renderDetail(u) {
     <section class="section">
       <div class="grid charts-3">
         <div class="card"><h3>Modes of usage</h3><p class="card-sub">How this user works with Copilot</p><div id="d-modes"></div></div>
-        <div class="card"><h3>Models used</h3><p class="card-sub">Tokens consumed per model</p><div id="d-models"></div></div>
+        <div class="card"><h3>Models used</h3><p class="card-sub">Share of acceptances</p><div id="d-models"></div></div>
         <div class="card"><h3>Editors</h3><p class="card-sub">Where they code</p><div id="d-editors"></div></div>
       </div>
     </section>
@@ -271,9 +276,7 @@ function renderDetail(u) {
   ]);
   if (hasDetail) {
     el('d-modes').innerHTML = donut(u.modes, { valueKey: 'value', labelKey: 'label', size: 170, thickness: 26 });
-    el('d-models').innerHTML = barList(
-      u.models.map(m => ({ name: m.name, value: m.tokens ?? m.value, sub: `${fmt(m.value)} acc` })),
-      { colorByIndex: true });
+    el('d-models').innerHTML = barList(u.models.map(m => ({ name: m.name, value: m.value })), { colorByIndex: true });
     el('d-editors').innerHTML = barList(u.editors.map(e => ({ name: e.name, value: e.value })), { colorByIndex: true });
     el('d-langs').innerHTML = barList(
       u.languages.map(l => ({ name: l.name, value: l.acceptances, sub: l.acceptanceRate + '%' })), { format: fmt });

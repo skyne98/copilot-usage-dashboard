@@ -11,19 +11,21 @@
       "Data",
       "Mobile",
       "DevOps"
-    ]
+    ],
+    "includedCreditsPerUser": 3900,
+    "creditUsd": 0.01
   },
   "overview": {
     "kpis": {
       "activeUsers": 12,
       "engagedUsers": 12,
-      "totalSuggestions": 53150,
-      "totalAcceptances": 22677,
-      "acceptanceRate": 43,
-      "linesAccepted": 47796,
-      "ideChats": 1289,
-      "prSummaries": 100,
-      "tokensUsed": 39156
+      "totalSuggestions": 46401,
+      "totalAcceptances": 19714,
+      "acceptanceRate": 42,
+      "linesAccepted": 41733,
+      "ideChats": 1077,
+      "prSummaries": 93,
+      "aiCredits": 7102
     },
     "series": {
       "dates": [
@@ -59,23 +61,23 @@
       "activeUsers": [
         12,
         12,
+        11,
+        10,
+        9,
+        12,
+        12,
+        12,
+        12,
         12,
         10,
-        10,
-        12,
-        12,
-        12,
-        12,
-        12,
         11,
         12,
         12,
         12,
         12,
         12,
-        12,
         8,
-        10,
+        9,
         12,
         12,
         12,
@@ -87,238 +89,238 @@
         12
       ],
       "engagedUsers": [
-        11,
         12,
-        10,
-        1,
+        12,
+        9,
+        0,
         3,
         10,
         10,
         10,
+        9,
+        10,
+        3,
+        4,
+        9,
+        10,
+        9,
         10,
         11,
-        3,
-        5,
+        4,
+        1,
         9,
         11,
-        10,
+        9,
         10,
         11,
-        4,
+        1,
         3,
         11,
-        12,
-        11,
-        11,
-        10,
-        2,
-        4,
-        12,
-        12
+        11
       ],
       "linesAccepted": [
-        1949,
-        2068,
-        2071,
-        345,
-        492,
-        1984,
-        3035,
-        1832,
-        2086,
-        2298,
-        411,
-        555,
-        2565,
-        2158,
-        1742,
-        2346,
-        2320,
-        388,
-        461,
-        1883,
-        2664,
-        2546,
-        1849,
-        1798,
-        454,
-        358,
-        2358,
-        2780
+        1987,
+        1671,
+        1722,
+        318,
+        475,
+        1796,
+        2517,
+        1486,
+        1468,
+        1935,
+        379,
+        515,
+        2142,
+        1950,
+        1432,
+        2097,
+        2143,
+        341,
+        351,
+        1650,
+        2487,
+        2135,
+        1617,
+        1744,
+        357,
+        313,
+        2157,
+        2548
       ],
       "acceptanceRate": [
-        70,
-        66,
-        68,
-        69,
-        72,
-        66,
-        77,
-        65,
         71,
-        69,
-        65,
-        72,
-        74,
-        68,
         64,
         66,
-        64,
-        66,
-        76,
-        72,
-        76,
         68,
-        70,
         73,
+        65,
         76,
+        67,
+        72,
+        68,
+        69,
+        73,
+        73,
+        69,
         62,
         69,
+        65,
+        66,
+        75,
+        78,
+        75,
+        68,
+        69,
+        74,
+        75,
+        63,
+        70,
         71
       ]
     },
     "featureSplit": [
       {
         "label": "Code completions",
-        "value": 22677
+        "value": 19714
       },
       {
         "label": "IDE chat",
-        "value": 1289
+        "value": 1077
       },
       {
         "label": "PR summaries",
-        "value": 100
+        "value": 93
       }
     ],
     "topLanguages": [
       {
-        "name": "Python",
+        "name": "JavaScript",
         "engagedUsers": 8,
-        "suggestions": 2908,
-        "acceptances": 1421,
-        "acceptanceRate": 49
-      },
-      {
-        "name": "Go",
-        "engagedUsers": 7,
-        "suggestions": 3213,
-        "acceptances": 1292,
-        "acceptanceRate": 40
-      },
-      {
-        "name": "YAML",
-        "engagedUsers": 6,
-        "suggestions": 2788,
-        "acceptances": 1019,
-        "acceptanceRate": 37
-      },
-      {
-        "name": "Rust",
-        "engagedUsers": 5,
-        "suggestions": 2236,
-        "acceptances": 975,
+        "suggestions": 4622,
+        "acceptances": 2045,
         "acceptanceRate": 44
       },
       {
-        "name": "JavaScript",
-        "engagedUsers": 4,
-        "suggestions": 1935,
-        "acceptances": 935,
-        "acceptanceRate": 48
+        "name": "Python",
+        "engagedUsers": 7,
+        "suggestions": 2624,
+        "acceptances": 1293,
+        "acceptanceRate": 49
+      },
+      {
+        "name": "Rust",
+        "engagedUsers": 6,
+        "suggestions": 3005,
+        "acceptances": 1166,
+        "acceptanceRate": 39
+      },
+      {
+        "name": "Go",
+        "engagedUsers": 6,
+        "suggestions": 2705,
+        "acceptances": 996,
+        "acceptanceRate": 37
       },
       {
         "name": "Ruby",
-        "engagedUsers": 4,
-        "suggestions": 2142,
-        "acceptances": 891,
-        "acceptanceRate": 42
-      },
-      {
-        "name": "SQL",
-        "engagedUsers": 5,
-        "suggestions": 2826,
-        "acceptances": 880,
-        "acceptanceRate": 31
+        "engagedUsers": 6,
+        "suggestions": 2535,
+        "acceptances": 920,
+        "acceptanceRate": 36
       },
       {
         "name": "TypeScript",
-        "engagedUsers": 6,
-        "suggestions": 1729,
-        "acceptances": 771,
-        "acceptanceRate": 45
+        "engagedUsers": 7,
+        "suggestions": 2005,
+        "acceptances": 819,
+        "acceptanceRate": 41
+      },
+      {
+        "name": "SQL",
+        "engagedUsers": 3,
+        "suggestions": 991,
+        "acceptances": 459,
+        "acceptanceRate": 46
+      },
+      {
+        "name": "YAML",
+        "engagedUsers": 3,
+        "suggestions": 941,
+        "acceptances": 455,
+        "acceptanceRate": 48
       },
       {
         "name": "C#",
-        "engagedUsers": 4,
-        "suggestions": 1791,
-        "acceptances": 724,
-        "acceptanceRate": 40
+        "engagedUsers": 3,
+        "suggestions": 943,
+        "acceptances": 427,
+        "acceptanceRate": 45
       },
       {
         "name": "Java",
-        "engagedUsers": 3,
-        "suggestions": 436,
-        "acceptances": 209,
-        "acceptanceRate": 48
+        "engagedUsers": 2,
+        "suggestions": 366,
+        "acceptances": 182,
+        "acceptanceRate": 50
       }
     ],
     "topEditors": [
       {
         "name": "Visual Studio",
-        "engagedUsers": 7,
-        "value": 850
-      },
-      {
-        "name": "Xcode",
-        "engagedUsers": 5,
-        "value": 707
+        "engagedUsers": 8,
+        "value": 631
       },
       {
         "name": "JetBrains",
+        "engagedUsers": 5,
+        "value": 600
+      },
+      {
+        "name": "Xcode",
         "engagedUsers": 4,
-        "value": 338
+        "value": 508
       },
       {
         "name": "VS Code",
-        "engagedUsers": 4,
-        "value": 217
+        "engagedUsers": 3,
+        "value": 140
       },
       {
         "name": "Neovim",
         "engagedUsers": 2,
-        "value": 109
+        "value": 71
       }
     ],
     "topModels": [
       {
-        "name": "Claude Sonnet 4.5",
-        "engagedUsers": 9,
-        "value": 6264,
+        "name": "GPT-4o",
+        "engagedUsers": 10,
+        "value": 5451,
         "isCustom": false
       },
       {
-        "name": "GPT-4o",
-        "engagedUsers": 10,
-        "value": 6255,
+        "name": "Claude Sonnet 4.5",
+        "engagedUsers": 9,
+        "value": 5417,
         "isCustom": false
       },
       {
         "name": "o3-mini",
         "engagedUsers": 7,
-        "value": 5393,
+        "value": 4789,
         "isCustom": false
       },
       {
         "name": "Gemini 2.5 Pro",
-        "engagedUsers": 6,
-        "value": 3182,
+        "engagedUsers": 5,
+        "value": 2421,
         "isCustom": false
       },
       {
         "name": "GPT-4.1",
-        "engagedUsers": 4,
-        "value": 1582,
+        "engagedUsers": 5,
+        "value": 1635,
         "isCustom": false
       }
     ]
@@ -337,8 +339,9 @@
       "linesAccepted": 3951,
       "chats": 85,
       "prSummaries": 15,
-      "tokensUsed": 3280,
-      "topModel": "Gemini 2.5 Pro",
+      "aiCredits": 608,
+      "includedCredits": 3900,
+      "topModel": "o3-mini",
       "topEditor": "VS Code",
       "topLanguage": "YAML",
       "lastActive": "2026-07-07",
@@ -389,25 +392,19 @@
       ],
       "models": [
         {
+          "name": "o3-mini",
+          "value": 1151,
+          "isCustom": false
+        },
+        {
           "name": "Gemini 2.5 Pro",
           "value": 944,
-          "isCustom": false,
-          "mult": 1,
-          "tokens": 1790
+          "isCustom": false
         },
         {
           "name": "GPT-4o",
           "value": 486,
-          "isCustom": false,
-          "mult": 1,
-          "tokens": 914
-        },
-        {
-          "name": "o3-mini",
-          "value": 1151,
-          "isCustom": false,
-          "mult": 0.33,
-          "tokens": 576
+          "isCustom": false
         }
       ],
       "editors": [
@@ -552,8 +549,9 @@
       "linesAccepted": 983,
       "chats": 36,
       "prSummaries": 3,
-      "tokensUsed": 881,
-      "topModel": "Claude Sonnet 4.5",
+      "aiCredits": 255,
+      "includedCredits": 3900,
+      "topModel": "GPT-4o",
       "topEditor": "VS Code",
       "topLanguage": "C#",
       "lastActive": "2026-07-07",
@@ -604,25 +602,19 @@
       ],
       "models": [
         {
-          "name": "Claude Sonnet 4.5",
-          "value": 152,
-          "isCustom": false,
-          "mult": 1.25,
-          "tokens": 398
-        },
-        {
           "name": "GPT-4o",
           "value": 166,
-          "isCustom": false,
-          "mult": 1,
-          "tokens": 261
+          "isCustom": false
+        },
+        {
+          "name": "Claude Sonnet 4.5",
+          "value": 152,
+          "isCustom": false
         },
         {
           "name": "GPT-4.1",
           "value": 103,
-          "isCustom": false,
-          "mult": 1,
-          "tokens": 222
+          "isCustom": false
         }
       ],
       "editors": [
@@ -767,10 +759,11 @@
       "linesAccepted": 6205,
       "chats": 129,
       "prSummaries": 5,
-      "tokensUsed": 4121,
-      "topModel": "Claude Sonnet 4.5",
+      "aiCredits": 915,
+      "includedCredits": 3900,
+      "topModel": "o3-mini",
       "topEditor": "Xcode",
-      "topLanguage": "TypeScript",
+      "topLanguage": "Python",
       "lastActive": "2026-07-07",
       "status": "active",
       "activitySeries": [
@@ -819,32 +812,24 @@
       ],
       "models": [
         {
+          "name": "o3-mini",
+          "value": 714,
+          "isCustom": false
+        },
+        {
           "name": "Claude Sonnet 4.5",
           "value": 666,
-          "isCustom": false,
-          "mult": 1.25,
-          "tokens": 1512
+          "isCustom": false
         },
         {
           "name": "GPT-4o",
           "value": 603,
-          "isCustom": false,
-          "mult": 1,
-          "tokens": 1156
+          "isCustom": false
         },
         {
           "name": "Gemini 2.5 Pro",
           "value": 542,
-          "isCustom": false,
-          "mult": 1,
-          "tokens": 928
-        },
-        {
-          "name": "o3-mini",
-          "value": 714,
-          "isCustom": false,
-          "mult": 0.33,
-          "tokens": 525
+          "isCustom": false
         }
       ],
       "editors": [
@@ -855,7 +840,7 @@
       ],
       "languages": [
         {
-          "name": "TypeScript",
+          "name": "Python",
           "suggestions": 832,
           "acceptances": 475,
           "acceptanceRate": 57
@@ -867,10 +852,10 @@
           "acceptanceRate": 42
         },
         {
-          "name": "Java",
-          "suggestions": 70,
-          "acceptances": 27,
-          "acceptanceRate": 39
+          "name": "JavaScript",
+          "suggestions": 283,
+          "acceptances": 75,
+          "acceptanceRate": 27
         }
       ],
       "dailySeries": {
@@ -971,99 +956,94 @@
       "name": "Tom Halvorsen",
       "team": "Mobile",
       "avatarUrl": "https://avatars.githubusercontent.com/u/1003?v=4",
-      "activeDays": 9,
+      "activeDays": 5,
       "windowDays": 28,
-      "suggestions": 1860,
-      "acceptances": 865,
-      "acceptanceRate": 47,
-      "linesAccepted": 2246,
-      "chats": 42,
-      "prSummaries": 8,
-      "tokensUsed": 1175,
-      "topModel": "GPT-4.1",
+      "suggestions": 1011,
+      "acceptances": 470,
+      "acceptanceRate": 46,
+      "linesAccepted": 1233,
+      "chats": 22,
+      "prSummaries": 4,
+      "aiCredits": 198,
+      "includedCredits": 3900,
+      "topModel": "o3-mini",
       "topEditor": "Xcode",
       "topLanguage": "Python",
       "lastActive": "2026-07-07",
       "status": "active",
       "activitySeries": [
-        38,
-        33,
-        13,
-        6,
-        9,
-        12,
-        45,
-        38,
-        32,
-        40,
-        13,
-        1,
-        51,
-        18,
-        11,
-        13,
-        38,
-        5,
-        6,
-        21,
-        37,
-        20,
         16,
-        35,
-        11,
-        8,
+        24,
+        0,
+        2,
+        6,
+        3,
+        26,
+        20,
         19,
-        31
+        24,
+        10,
+        0,
+        31,
+        13,
+        2,
+        7,
+        18,
+        3,
+        3,
+        14,
+        23,
+        7,
+        10,
+        19,
+        8,
+        6,
+        8,
+        15
       ],
       "modes": [
         {
           "label": "Code completions",
-          "value": 865
+          "value": 470
         },
         {
           "label": "IDE chat",
-          "value": 42
+          "value": 22
         },
         {
           "label": "PR summaries",
-          "value": 8
+          "value": 4
         }
       ],
       "models": [
         {
+          "name": "o3-mini",
+          "value": 216,
+          "isCustom": false
+        },
+        {
           "name": "GPT-4.1",
-          "value": 287,
-          "isCustom": false,
-          "mult": 1,
-          "tokens": 583
+          "value": 156,
+          "isCustom": false
         },
         {
           "name": "GPT-4o",
-          "value": 181,
-          "isCustom": false,
-          "mult": 1,
-          "tokens": 314
-        },
-        {
-          "name": "o3-mini",
-          "value": 397,
-          "isCustom": false,
-          "mult": 0.33,
-          "tokens": 278
+          "value": 98,
+          "isCustom": false
         }
       ],
       "editors": [
         {
           "name": "Xcode",
-          "value": 49
+          "value": 27
         },
         {
           "name": "VS Code",
-          "value": 22
+          "value": 12
         },
         {
           "name": "Visual Studio",
-          "value": 20
+          "value": 11
         }
       ],
       "languages": [
@@ -1130,64 +1110,64 @@
           "2026-07-07"
         ],
         "activity": [
-          38,
-          33,
-          13,
-          6,
-          9,
-          12,
-          45,
-          38,
-          32,
-          40,
-          13,
-          1,
-          51,
-          18,
-          11,
-          13,
-          38,
-          5,
-          6,
-          21,
-          37,
-          20,
           16,
-          35,
-          11,
-          8,
+          24,
+          0,
+          2,
+          6,
+          3,
+          26,
+          20,
           19,
-          31
+          24,
+          10,
+          0,
+          31,
+          13,
+          2,
+          7,
+          18,
+          3,
+          3,
+          14,
+          23,
+          7,
+          10,
+          19,
+          8,
+          6,
+          8,
+          15
         ],
         "linesAccepted": [
-          100,
-          112,
-          29,
-          20,
-          21,
-          30,
-          187,
-          179,
+          42,
+          82,
+          0,
+          7,
+          14,
+          8,
           108,
-          193,
-          26,
-          4,
-          187,
-          51,
-          35,
-          57,
-          114,
-          18,
-          28,
-          67,
-          131,
-          81,
-          60,
-          148,
-          39,
+          94,
+          64,
+          116,
           20,
-          47,
-          154
+          0,
+          114,
+          37,
+          6,
+          31,
+          54,
+          11,
+          14,
+          45,
+          81,
+          28,
+          38,
+          80,
+          29,
+          15,
+          20,
+          75
         ]
       }
     },
@@ -1204,8 +1184,9 @@
       "linesAccepted": 2744,
       "chats": 25,
       "prSummaries": 0,
-      "tokensUsed": 1707,
-      "topModel": "Gemini 2.5 Pro",
+      "aiCredits": 96,
+      "includedCredits": 3900,
+      "topModel": "o3-mini",
       "topEditor": "JetBrains",
       "topLanguage": "JavaScript",
       "lastActive": "2026-07-07",
@@ -1256,25 +1237,19 @@
       ],
       "models": [
         {
+          "name": "o3-mini",
+          "value": 767,
+          "isCustom": false
+        },
+        {
           "name": "Gemini 2.5 Pro",
           "value": 439,
-          "isCustom": false,
-          "mult": 1,
-          "tokens": 895
+          "isCustom": false
         },
         {
           "name": "Claude Sonnet 4.5",
           "value": 234,
-          "isCustom": false,
-          "mult": 1.25,
-          "tokens": 433
-        },
-        {
-          "name": "o3-mini",
-          "value": 767,
-          "isCustom": false,
-          "mult": 0.33,
-          "tokens": 379
+          "isCustom": false
         }
       ],
       "editors": [
@@ -1427,10 +1402,11 @@
       "linesAccepted": 4728,
       "chats": 195,
       "prSummaries": 8,
-      "tokensUsed": 3733,
+      "aiCredits": 807,
+      "includedCredits": 3900,
       "topModel": "GPT-4o",
       "topEditor": "Visual Studio",
-      "topLanguage": "Go",
+      "topLanguage": "JavaScript",
       "lastActive": "2026-07-07",
       "status": "active",
       "activitySeries": [
@@ -1481,48 +1457,54 @@
         {
           "name": "GPT-4o",
           "value": 1420,
-          "isCustom": false,
-          "mult": 1,
-          "tokens": 2180
+          "isCustom": false
         },
         {
           "name": "Claude Sonnet 4.5",
           "value": 781,
-          "isCustom": false,
-          "mult": 1.25,
-          "tokens": 1553
+          "isCustom": false
         }
       ],
       "editors": [
         {
           "name": "Visual Studio",
-          "value": 270
+          "value": 146
+        },
+        {
+          "name": "JetBrains",
+          "value": 124
         }
       ],
       "languages": [
         {
-          "name": "Go",
-          "suggestions": 565,
-          "acceptances": 333,
-          "acceptanceRate": 59
-        },
-        {
-          "name": "Ruby",
-          "suggestions": 683,
-          "acceptances": 332,
-          "acceptanceRate": 49
-        },
-        {
-          "name": "SQL",
-          "suggestions": 785,
-          "acceptances": 158,
-          "acceptanceRate": 20
+          "name": "JavaScript",
+          "suggestions": 659,
+          "acceptances": 360,
+          "acceptanceRate": 55
         },
         {
           "name": "YAML",
           "suggestions": 165,
-          "acceptances": 39,
-          "acceptanceRate": 24
+          "acceptances": 98,
+          "acceptanceRate": 59
+        },
+        {
+          "name": "C#",
+          "suggestions": 127,
+          "acceptances": 58,
+          "acceptanceRate": 46
+        },
+        {
+          "name": "SQL",
+          "suggestions": 122,
+          "acceptances": 42,
+          "acceptanceRate": 34
+        },
+        {
+          "name": "Ruby",
+          "suggestions": 51,
+          "acceptances": 13,
+          "acceptanceRate": 25
         }
       ],
       "dailySeries": {
@@ -1623,103 +1605,100 @@
       "name": "Nadia Koval",
       "team": "Frontend",
       "avatarUrl": "https://avatars.githubusercontent.com/u/1006?v=4",
-      "activeDays": 20,
+      "activeDays": 6,
       "windowDays": 28,
-      "suggestions": 6025,
-      "acceptances": 2040,
-      "acceptanceRate": 34,
-      "linesAccepted": 3966,
-      "chats": 173,
-      "prSummaries": 5,
-      "tokensUsed": 4497,
-      "topModel": "Claude Sonnet 4.5",
-      "topEditor": "Xcode",
-      "topLanguage": "YAML",
+      "suggestions": 2120,
+      "acceptances": 519,
+      "acceptanceRate": 24,
+      "linesAccepted": 1421,
+      "chats": 23,
+      "prSummaries": 2,
+      "aiCredits": 239,
+      "includedCredits": 3900,
+      "topModel": "GPT-4.1",
+      "topEditor": "Visual Studio",
+      "topLanguage": "JavaScript",
       "lastActive": "2026-07-07",
       "status": "active",
       "activitySeries": [
-        15,
-        98,
-        78,
-        17,
-        1,
-        59,
-        40,
-        69,
-        99,
-        60,
+        25,
         24,
-        6,
-        14,
-        69,
-        38,
-        76,
-        44,
-        11,
-        16,
-        93,
-        28,
-        61,
-        58,
-        13,
-        20,
+        5,
+        4,
+        0,
+        25,
+        36,
+        22,
+        35,
+        9,
+        0,
+        5,
+        8,
         21,
-        52,
-        25
+        16,
+        17,
+        25,
+        5,
+        0,
+        15,
+        20,
+        2,
+        28,
+        30,
+        2,
+        8,
+        18,
+        19
       ],
       "modes": [
         {
           "label": "Code completions",
-          "value": 2040
+          "value": 519
         },
         {
           "label": "IDE chat",
-          "value": 173
+          "value": 23
         },
         {
           "label": "PR summaries",
-          "value": 5
+          "value": 2
         }
       ],
       "models": [
         {
-          "name": "Claude Sonnet 4.5",
-          "value": 587,
-          "isCustom": false,
-          "mult": 1.25,
-          "tokens": 1645
-        },
-        {
-          "name": "GPT-4o",
-          "value": 664,
-          "isCustom": false,
-          "mult": 1,
-          "tokens": 1611
-        },
-        {
-          "name": "Gemini 2.5 Pro",
-          "value": 563,
-          "isCustom": false,
-          "mult": 1,
-          "tokens": 1092
+          "name": "GPT-4.1",
+          "value": 184,
+          "isCustom": false
         },
         {
           "name": "o3-mini",
-          "value": 225,
-          "isCustom": false,
-          "mult": 0.33,
-          "tokens": 149
+          "value": 153,
+          "isCustom": false
+        },
+        {
+          "name": "GPT-4o",
+          "value": 107,
+          "isCustom": false
+        },
+        {
+          "name": "Claude Sonnet 4.5",
+          "value": 75,
+          "isCustom": false
         }
       ],
       "editors": [
         {
-          "name": "Xcode",
-          "value": 200
+          "name": "Visual Studio",
+          "value": 42
+        },
+        {
+          "name": "Neovim",
+          "value": 18
         }
       ],
       "languages": [
         {
-          "name": "YAML",
+          "name": "JavaScript",
           "suggestions": 886,
           "acceptances": 405,
           "acceptanceRate": 46
@@ -1737,16 +1716,10 @@
           "acceptanceRate": 58
         },
         {
-          "name": "C#",
+          "name": "Go",
           "suggestions": 219,
           "acceptances": 98,
           "acceptanceRate": 45
-        },
-        {
-          "name": "Go",
-          "suggestions": 162,
-          "acceptances": 61,
-          "acceptanceRate": 38
         }
       ],
       "dailySeries": {
@@ -1781,64 +1754,64 @@
           "2026-07-07"
         ],
         "activity": [
-          15,
-          98,
-          78,
-          17,
-          1,
-          59,
-          40,
-          69,
-          99,
-          60,
+          25,
           24,
-          6,
-          14,
-          69,
-          38,
-          76,
-          44,
-          11,
-          16,
-          93,
-          28,
-          61,
-          58,
-          13,
-          20,
+          5,
+          4,
+          0,
+          25,
+          36,
+          22,
+          35,
+          9,
+          0,
+          5,
+          8,
           21,
-          52,
-          25
+          16,
+          17,
+          25,
+          5,
+          0,
+          15,
+          20,
+          2,
+          28,
+          30,
+          2,
+          8,
+          18,
+          19
         ],
         "linesAccepted": [
-          45,
-          434,
-          341,
-          62,
-          2,
-          185,
-          159,
-          166,
-          258,
-          262,
-          50,
-          20,
-          54,
-          180,
-          156,
-          180,
-          120,
-          39,
-          58,
-          194,
-          132,
-          201,
-          241,
+          78,
+          95,
+          12,
+          10,
+          0,
+          52,
+          122,
+          84,
+          92,
           37,
-          89,
-          59,
-          153,
-          89
+          0,
+          14,
+          28,
+          76,
+          33,
+          80,
+          83,
+          21,
+          0,
+          66,
+          57,
+          6,
+          100,
+          132,
+          6,
+          39,
+          48,
+          50
         ]
       }
     },
@@ -1855,9 +1828,10 @@
       "linesAccepted": 4409,
       "chats": 63,
       "prSummaries": 11,
-      "tokensUsed": 2831,
-      "topModel": "GPT-4o",
-      "topEditor": "Visual Studio",
+      "aiCredits": 504,
+      "includedCredits": 3900,
+      "topModel": "o3-mini",
+      "topEditor": "Xcode",
       "topLanguage": "Ruby",
       "lastActive": "2026-07-07",
       "status": "active",
@@ -1907,32 +1881,28 @@
       ],
       "models": [
         {
-          "name": "GPT-4o",
-          "value": 1102,
-          "isCustom": false,
-          "mult": 1,
-          "tokens": 2182
-        },
-        {
           "name": "o3-mini",
           "value": 1239,
-          "isCustom": false,
-          "mult": 0.33,
-          "tokens": 649
+          "isCustom": false
+        },
+        {
+          "name": "GPT-4o",
+          "value": 1102,
+          "isCustom": false
         }
       ],
       "editors": [
         {
-          "name": "Visual Studio",
-          "value": 132
+          "name": "Xcode",
+          "value": 91
         },
         {
           "name": "JetBrains",
-          "value": 61
+          "value": 84
         },
         {
-          "name": "Neovim",
-          "value": 47
+          "name": "Visual Studio",
+          "value": 65
         }
       ],
       "languages": [
@@ -1949,7 +1919,7 @@
           "acceptanceRate": 55
         },
         {
-          "name": "Python",
+          "name": "TypeScript",
           "suggestions": 614,
           "acceptances": 311,
           "acceptanceRate": 51
@@ -2061,10 +2031,11 @@
       "linesAccepted": 5330,
       "chats": 188,
       "prSummaries": 26,
-      "tokensUsed": 6883,
+      "aiCredits": 1122,
+      "includedCredits": 3900,
       "topModel": "Claude Sonnet 4.5",
-      "topEditor": "JetBrains",
-      "topLanguage": "C#",
+      "topEditor": "Visual Studio",
+      "topLanguage": "Ruby",
       "lastActive": "2026-07-07",
       "status": "active",
       "activitySeries": [
@@ -2115,50 +2086,44 @@
         {
           "name": "Claude Sonnet 4.5",
           "value": 2198,
-          "isCustom": false,
-          "mult": 1.25,
-          "tokens": 5090
+          "isCustom": false
         },
         {
           "name": "GPT-4o",
           "value": 973,
-          "isCustom": false,
-          "mult": 1,
-          "tokens": 1793
+          "isCustom": false
         }
       ],
       "editors": [
         {
-          "name": "JetBrains",
-          "value": 102
-        },
-        {
           "name": "Visual Studio",
-          "value": 76
-        },
-        {
-          "name": "Neovim",
-          "value": 62
+          "value": 240
         }
       ],
       "languages": [
         {
-          "name": "C#",
-          "suggestions": 345,
-          "acceptances": 143,
-          "acceptanceRate": 41
+          "name": "Ruby",
+          "suggestions": 641,
+          "acceptances": 204,
+          "acceptanceRate": 32
         },
         {
           "name": "Rust",
-          "suggestions": 302,
-          "acceptances": 127,
-          "acceptanceRate": 42
+          "suggestions": 515,
+          "acceptances": 175,
+          "acceptanceRate": 34
         },
         {
-          "name": "Python",
-          "suggestions": 54,
-          "acceptances": 26,
-          "acceptanceRate": 48
+          "name": "TypeScript",
+          "suggestions": 287,
+          "acceptances": 146,
+          "acceptanceRate": 51
+        },
+        {
+          "name": "C#",
+          "suggestions": 145,
+          "acceptances": 29,
+          "acceptanceRate": 20
         }
       ],
       "dailySeries": {
@@ -2259,58 +2224,59 @@
       "name": "Omar Farouk",
       "team": "DevOps",
       "avatarUrl": "https://avatars.githubusercontent.com/u/1009?v=4",
-      "activeDays": 26,
+      "activeDays": 17,
       "windowDays": 28,
-      "suggestions": 5121,
-      "acceptances": 2687,
+      "suggestions": 3126,
+      "acceptances": 1640,
       "acceptanceRate": 52,
-      "linesAccepted": 6212,
-      "chats": 119,
+      "linesAccepted": 3707,
+      "chats": 77,
       "prSummaries": 1,
-      "tokensUsed": 4368,
-      "topModel": "Claude Sonnet 4.5",
-      "topEditor": "Visual Studio",
-      "topLanguage": "SQL",
+      "aiCredits": 494,
+      "includedCredits": 3900,
+      "topModel": "o3-mini",
+      "topEditor": "JetBrains",
+      "topLanguage": "Ruby",
       "lastActive": "2026-07-07",
       "status": "active",
       "activitySeries": [
-        66,
         79,
-        57,
-        2,
-        22,
-        59,
-        123,
-        97,
-        106,
-        71,
+        68,
+        60,
+        13,
+        20,
+        46,
+        33,
+        37,
+        13,
+        43,
+        19,
+        4,
+        46,
+        74,
+        14,
+        74,
+        55,
+        18,
+        15,
+        39,
         11,
-        16,
-        119,
-        94,
-        52,
-        118,
-        83,
-        24,
-        23,
-        59,
-        22,
-        106,
-        62,
-        50,
-        11,
+        66,
+        40,
+        33,
         10,
-        75,
-        90
+        5,
+        51,
+        56
       ],
       "modes": [
         {
           "label": "Code completions",
-          "value": 2687
+          "value": 1640
         },
         {
           "label": "IDE chat",
-          "value": 119
+          "value": 77
         },
         {
           "label": "PR summaries",
@@ -2319,61 +2285,55 @@
       ],
       "models": [
         {
+          "name": "o3-mini",
+          "value": 549,
+          "isCustom": false
+        },
+        {
           "name": "Claude Sonnet 4.5",
-          "value": 859,
-          "isCustom": false,
-          "mult": 1.25,
-          "tokens": 2265
+          "value": 524,
+          "isCustom": false
         },
         {
           "name": "Gemini 2.5 Pro",
-          "value": 508,
-          "isCustom": false,
-          "mult": 1,
-          "tokens": 816
+          "value": 310,
+          "isCustom": false
         },
         {
           "name": "GPT-4o",
-          "value": 420,
-          "isCustom": false,
-          "mult": 1,
-          "tokens": 718
-        },
-        {
-          "name": "o3-mini",
-          "value": 900,
-          "isCustom": false,
-          "mult": 0.33,
-          "tokens": 569
+          "value": 256,
+          "isCustom": false
         }
       ],
       "editors": [
         {
+          "name": "JetBrains",
+          "value": 82
+        },
+        {
+          "name": "Neovim",
+          "value": 53
+        },
+        {
           "name": "Visual Studio",
-          "value": 260
+          "value": 35
         }
       ],
       "languages": [
         {
-          "name": "SQL",
+          "name": "Ruby",
           "suggestions": 384,
           "acceptances": 144,
           "acceptanceRate": 38
         },
         {
-          "name": "C#",
+          "name": "Rust",
           "suggestions": 556,
           "acceptances": 143,
           "acceptanceRate": 26
         },
         {
           "name": "TypeScript",
-          "suggestions": 283,
-          "acceptances": 100,
-          "acceptanceRate": 35
-        },
-        {
-          "name": "YAML",
           "suggestions": 352,
           "acceptances": 88,
           "acceptanceRate": 25
@@ -2417,64 +2377,64 @@
           "2026-07-07"
         ],
         "activity": [
-          66,
           79,
-          57,
-          2,
-          22,
-          59,
-          123,
-          97,
-          106,
-          71,
+          68,
+          60,
+          13,
+          20,
+          46,
+          33,
+          37,
+          13,
+          43,
+          19,
+          4,
+          46,
+          74,
+          14,
+          74,
+          55,
+          18,
+          15,
+          39,
           11,
-          16,
-          119,
-          94,
-          52,
-          118,
-          83,
-          24,
-          23,
-          59,
-          22,
-          106,
-          62,
-          50,
-          11,
+          66,
+          40,
+          33,
           10,
-          75,
-          90
+          5,
+          51,
+          56
         ],
         "linesAccepted": [
-          319,
-          201,
-          171,
-          7,
-          88,
-          150,
-          550,
-          290,
-          465,
-          155,
-          33,
-          40,
-          528,
-          422,
-          217,
-          331,
-          237,
-          87,
-          109,
-          246,
-          103,
-          433,
-          194,
-          237,
-          41,
-          40,
-          216,
-          302
+          382,
+          173,
+          180,
+          45,
+          80,
+          117,
+          148,
+          111,
+          57,
+          94,
+          57,
+          10,
+          204,
+          332,
+          59,
+          208,
+          157,
+          65,
+          71,
+          163,
+          51,
+          270,
+          125,
+          156,
+          37,
+          20,
+          147,
+          188
         ]
       }
     },
@@ -2491,7 +2451,8 @@
       "linesAccepted": 2731,
       "chats": 64,
       "prSummaries": 3,
-      "tokensUsed": 3207,
+      "aiCredits": 630,
+      "includedCredits": 3900,
       "topModel": "GPT-4.1",
       "topEditor": "Xcode",
       "topLanguage": "Go",
@@ -2545,16 +2506,12 @@
         {
           "name": "GPT-4.1",
           "value": 890,
-          "isCustom": false,
-          "mult": 1,
-          "tokens": 1794
+          "isCustom": false
         },
         {
           "name": "Claude Sonnet 4.5",
           "value": 541,
-          "isCustom": false,
-          "mult": 1.25,
-          "tokens": 1413
+          "isCustom": false
         }
       ],
       "editors": [
@@ -2707,10 +2664,11 @@
       "linesAccepted": 4291,
       "chats": 170,
       "prSummaries": 15,
-      "tokensUsed": 2473,
-      "topModel": "Claude Sonnet 4.5",
-      "topEditor": "Xcode",
-      "topLanguage": "Python",
+      "aiCredits": 1234,
+      "includedCredits": 3900,
+      "topModel": "GPT-4.1",
+      "topEditor": "JetBrains",
+      "topLanguage": "JavaScript",
       "lastActive": "2026-07-07",
       "status": "active",
       "activitySeries": [
@@ -2759,72 +2717,50 @@
       ],
       "models": [
         {
-          "name": "Claude Sonnet 4.5",
-          "value": 246,
-          "isCustom": false,
-          "mult": 1.25,
-          "tokens": 776
-        },
-        {
           "name": "GPT-4.1",
           "value": 302,
-          "isCustom": false,
-          "mult": 1,
-          "tokens": 662
+          "isCustom": false
+        },
+        {
+          "name": "Claude Sonnet 4.5",
+          "value": 246,
+          "isCustom": false
         },
         {
           "name": "GPT-4o",
           "value": 240,
-          "isCustom": false,
-          "mult": 1,
-          "tokens": 585
+          "isCustom": false
         },
         {
           "name": "Gemini 2.5 Pro",
           "value": 186,
-          "isCustom": false,
-          "mult": 1,
-          "tokens": 450
+          "isCustom": false
         }
       ],
       "editors": [
         {
-          "name": "Xcode",
-          "value": 68
-        },
-        {
-          "name": "VS Code",
-          "value": 67
-        },
-        {
           "name": "JetBrains",
-          "value": 65
+          "value": 200
         }
       ],
       "languages": [
         {
-          "name": "Python",
-          "suggestions": 754,
-          "acceptances": 351,
-          "acceptanceRate": 47
-        },
-        {
-          "name": "SQL",
-          "suggestions": 788,
-          "acceptances": 161,
-          "acceptanceRate": 20
-        },
-        {
-          "name": "YAML",
-          "suggestions": 609,
-          "acceptances": 130,
-          "acceptanceRate": 21
+          "name": "JavaScript",
+          "suggestions": 859,
+          "acceptances": 270,
+          "acceptanceRate": 31
         },
         {
           "name": "TypeScript",
-          "suggestions": 128,
-          "acceptances": 56,
-          "acceptanceRate": 44
+          "suggestions": 266,
+          "acceptances": 134,
+          "acceptanceRate": 50
+        },
+        {
+          "name": "Python",
+          "suggestions": 306,
+          "acceptances": 85,
+          "acceptanceRate": 28
         }
       ],
       "dailySeries": {

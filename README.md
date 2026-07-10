@@ -1,20 +1,32 @@
 # Copilot Usage Dashboard
 
 > ⚡ **A vibe-coded dashboard to check the usage of AI tokens.** Built for fun to visualize
-> how a team burns through GitHub Copilot — token/credit consumption, adoption, and per-user
-> activity — with a modern gradient UI.
+> how a team burns through GitHub Copilot — **AI-credit (AIC)** consumption, adoption, and
+> per-user activity — with a modern gradient UI.
 
 A simple, modern dashboard for **GitHub Copilot (Enterprise)** usage — a team overview,
 a per-user list, and a click-through detail view for each user. Built with a tiny Node
 (Express) backend + a no-build vanilla-JS frontend. Runs on bundled demo data out of the box,
 so you can explore every screen without configuring anything.
 
+## AI credits (AIC)
+
+Since GitHub Copilot moved to **usage-based billing** (June 2026), usage is measured in
+**AI credits (AIC)**, where **1 credit = $0.01 USD**. Credits are derived from token
+consumption (input, output, cached) at each model's rate. Code completions and next-edit
+suggestions are **free**; credits are spent on Copilot Chat, CLI, the cloud agent, Spaces,
+Spark and third-party agents. Copilot Enterprise includes **3,900 credits/user/month**.
+
+Per-user consumption comes from the metrics API's **`ai_credits_used`** field (in the
+`users-1-day` / `users-28-day` reports) — an overall per-user total, not broken down by
+model or feature.
+
 ## Screens
-- **Team overview** — KPIs (active users, **tokens used**, acceptance rate, lines accepted,
-  chats), trend charts, feature mix, and top languages / editors / models.
-- **Individual users** — searchable, sortable cards (default sort: **tokens used**) with an
+- **Team overview** — KPIs (active users, **AI credits used** + USD, acceptance rate, lines
+  accepted, chats), trend charts, feature mix, and top languages / editors / models.
+- **Individual users** — searchable, sortable cards (default sort: **AI credits**) with an
   activity sparkline per user.
-- **User detail** — click any user for their modes of usage, tokens consumed per model,
+- **User detail** — AI credits used ($ + % of monthly allowance), modes of usage, models,
   editors, languages, and activity over time.
 
 ## Quick start

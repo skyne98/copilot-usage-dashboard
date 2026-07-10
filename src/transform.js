@@ -90,6 +90,7 @@ export function transformOverview(days, meta = {}) {
         acceptanceRate: rate(totalAcceptances, totalSuggestions),
         linesAccepted: totalLinesAccepted,
         ideChats: totalChats, prSummaries: totalPRs,
+        aiCredits: 0, // filled from per-user ai_credits_used (see server.js), not in the aggregate feed
       },
       series: { dates, activeUsers, engagedUsers, linesAccepted, acceptanceRate: acceptanceRateSeries },
       featureSplit: [
@@ -121,6 +122,9 @@ export function transformUsers(dayReports /* [{date, files:[...]}] */) {
         u.acceptances += num(rec.total_code_acceptances ?? rec.acceptances);
         u.linesAccepted += num(rec.total_code_lines_accepted ?? rec.lines_accepted);
         u.chats += num(rec.total_chats ?? rec.chats);
+        // AI credits consumed per user (usage-based billing, GA 2026-06). Overall per-user
+        // total — GitHub does not break ai_credits_used down by model/feature/surface.
+        u.aiCredits += num(rec.ai_credits_used ?? rec.ai_credits_consumed);
         byUser.set(login, u);
       }
     }
@@ -132,7 +136,7 @@ function emptyUser(login) {
   return {
     login, name: login, team: null,
     avatarUrl: `https://avatars.githubusercontent.com/${login}`,
-    suggestions: 0, acceptances: 0, linesAccepted: 0, chats: 0, prSummaries: 0,
+    suggestions: 0, acceptances: 0, linesAccepted: 0, chats: 0, prSummaries: 0, aiCredits: 0,
     _days: new Map(),
   };
 }
@@ -146,9 +150,7 @@ function finalizeUser(u) {
     windowDays: dates.length,
     activeDays: activity.filter(v => v > 0).length,
     acceptanceRate: rate(u.acceptances, u.suggestions),
-    // The Metrics API does not expose token/premium-request counts per user, so we surface a
-    // proxy (chats ≈ premium requests + a fraction of acceptances) so the metric is non-empty.
-    tokensUsed: Math.round(u.chats + u.acceptances * 0.15),
+    includedCredits: 3900, // Copilot Enterprise monthly AI-credit allowance per user
     topModel: '—', topEditor: '—', topLanguage: '—',
     lastActive: dates[dates.length - 1] || null,
     status: activity.slice(-7).some(v => v > 0) ? 'active' : 'idle',
