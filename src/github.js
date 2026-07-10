@@ -55,6 +55,15 @@ export function createClient(cfg) {
 
     // user<->team membership for a day
     getTeams: (scope, org, date) => get(`${metricsPath(scope, org)}/metrics/teams${date ? `?date=${date}` : ''}`),
+
+    // Billing usage for AI credits — carries the included (discount) vs additional (net) split.
+    // Different endpoint/scope than metrics: /{orgs|enterprises}/{x}/settings/billing/ai_credit/usage
+    getAiCreditUsage(scope, org) {
+      const owner = scope === 'org'
+        ? `/orgs/${encodeURIComponent(org)}`
+        : `/enterprises/${encodeURIComponent(cfg.targets.enterprise)}`;
+      return get(`${owner}/settings/billing/ai_credit/usage`);
+    },
   };
 }
 

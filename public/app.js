@@ -1,27 +1,17 @@
-import { sparkline, lineChart, barList, donut, fmt, CATEGORICAL, ACCENT } from './charts.js';
+import { sparkline, lineChart, barList, donut, progressBar, mountCharts, fmt, CATEGORICAL, ACCENT } from './charts.js';
 
-const $ = sel => document.querySelector(sel);
 const el = id => document.getElementById(id);
 
 const state = {
   cfg: null,
   overview: null,
+  billing: null,
   users: [],
+  teamCredits: 0,
   source: null,
   search: '',
   sort: 'credits',
 };
-
-// ---------- theme ----------
-const themeToggle = el('themeToggle');
-function applyTheme(t) {
-  document.documentElement.setAttribute('data-theme', t);
-  themeToggle.textContent = t === 'dark' ? '🌙' : '☀️';
-  localStorage.setItem('theme', t);
-}
-themeToggle.addEventListener('click', () =>
-  applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'));
-applyTheme(localStorage.getItem('theme') || 'dark');
 
 // ---------- helpers ----------
 async function api(path) {
@@ -76,12 +66,15 @@ async function fetchAll() {
     const q = scopeQuery();
     const [ov, us] = await Promise.all([api(`/api/overview?${q}`), api(`/api/users?${q}`)]);
     state.overview = ov.overview;
+    state.billing = ov.billing || null;
     state.meta = ov.meta;
     state.users = us.users || [];
+    state.teamCredits = state.users.reduce((a, u) => a + (u.aiCredits || 0), 0);
     state.source = ov.source;
     handleSource(ov);
     renderOverview();
     renderUsers();
+    mountCharts();
   } catch (e) {
     setError(e.message);
   } finally {
@@ -115,8 +108,8 @@ function renderOverview() {
     { label: 'Active users', value: fmt(k.activeUsers), sub: `${k.engagedUsers} engaged` },
     { label: 'AI credits used', value: fmt(k.aiCredits || 0), sub: `≈ ${usd(k.aiCredits || 0)} · AIC` },
     { label: 'Acceptance rate', value: k.acceptanceRate + '%', sub: `${fmt(k.totalAcceptances)} accepted` },
-    { label: 'Lines accepted', value: fmt(k.linesAccepted), sub: `of ${fmt(k.totalSuggestions)} suggestions` },
     { label: 'IDE chats', value: fmt(k.ideChats), sub: 'chat interactions' },
+    { label: 'PR summaries', value: fmt(k.prSummaries), sub: 'generated' },
   ];
   el('kpiGrid').innerHTML = kpis.map(x => `
     <div class="card kpi">
@@ -126,6 +119,8 @@ function renderOverview() {
       <div class="k-accent"></div>
     </div>`).join('');
 
+  renderBilling();
+
   const s = o.series;
   el('usersChart').innerHTML = lineChart(s.dates, [
     { name: 'Active', values: s.activeUsers, color: CATEGORICAL[0], area: true },
@@ -133,14 +128,8 @@ function renderOverview() {
   ]);
   el('usersLegend').innerHTML = legend([['Active', CATEGORICAL[0]], ['Engaged', CATEGORICAL[1]]]);
 
-  el('linesChart').innerHTML = lineChart(s.dates, [
-    { name: 'Lines accepted', values: s.linesAccepted, color: ACCENT, area: true },
-  ]);
-  el('linesLegend').innerHTML = legend([['Lines accepted', ACCENT]]);
-
   el('featureDonut').innerHTML = donut(o.featureSplit, { valueKey: 'value', labelKey: 'label' });
   el('modelBars').innerHTML = barList(o.topModels.slice(0, 6).map(m => ({ name: m.name, value: m.engagedUsers })), { colorByIndex: true });
-  el('editorBars').innerHTML = barList(o.topEditors.slice(0, 6).map(e => ({ name: e.name, value: e.engagedUsers })), { colorByIndex: true });
   el('languageBars').innerHTML = barList(
     o.topLanguages.slice(0, 8).map(l => ({ name: l.name, value: l.acceptances, sub: l.acceptanceRate + '%' })),
     { format: fmt }
@@ -148,6 +137,27 @@ function renderOverview() {
 }
 function legend(pairs) {
   return pairs.map(([name, c]) => `<span><i style="background:${c}"></i>${name}</span>`).join('');
+}
+
+// each user's share of the team's total AI credits
+function pctOfTeam(u) {
+  return state.teamCredits ? Math.round(((u.aiCredits || 0) / state.teamCredits) * 100) : 0;
+}
+
+function renderBilling() {
+  const b = state.billing;
+  const card = el('billingCard');
+  if (!b) { card.classList.add('hidden'); return; }
+  card.classList.remove('hidden');
+  const cycle = b.cycleStart && b.cycleEnd ? `${b.cycleStart} – ${b.cycleEnd}` : 'current cycle';
+  el('billingSub').textContent = `Cycle ${cycle} · ${b.seats} seats · all Copilot features`;
+  el('billingBody').innerHTML = `
+    ${progressBar(b.grossQuantity, b.includedPool)}
+    <div class="bill-readout">
+      <div class="bill-stat"><div class="v">${fmt(b.includedQuantity)}</div><div class="l">Included (of ${fmt(b.includedPool)})</div></div>
+      <div class="bill-stat"><div class="v">${fmt(b.additionalQuantity)}</div><div class="l">Additional</div></div>
+      <div class="bill-stat over"><div class="v">$${(b.netAmountUsd ?? 0).toFixed(2)}</div><div class="l">Billed</div></div>
+    </div>`;
 }
 
 // ---------- Tier 2: users list ----------
@@ -161,7 +171,6 @@ function sortedFilteredUsers() {
     credits: (a, b) => (b.aiCredits || 0) - (a.aiCredits || 0),
     activity: (a, b) => b.activeDays - a.activeDays,
     acceptance: (a, b) => b.acceptanceRate - a.acceptanceRate,
-    lines: (a, b) => b.linesAccepted - a.linesAccepted,
     name: (a, b) => (a.name || a.login).localeCompare(b.name || b.login),
   }[state.sort];
   return list.sort(cmp);
@@ -191,14 +200,15 @@ function renderUsers() {
         </div>
         <span class="badge ${u.status}">${u.status}</span>
       </div>
-      ${sparkline(u.activitySeries || [], { width: 236, height: 34 })}
+      ${sparkline(u.activitySeries || [], { width: 210, height: 26 })}
       <div class="u-metrics">
         <div class="u-metric"><div class="m-v">${fmt(u.aiCredits || 0)}</div><div class="m-l">AI credits</div></div>
-        <div class="u-metric"><div class="m-v">${u.activeDays}/${u.windowDays}</div><div class="m-l">active days</div></div>
-        <div class="u-metric"><div class="m-v">${u.acceptanceRate}%</div><div class="m-l">accept rate</div></div>
+        <div class="u-metric"><div class="m-v">${usd(u.aiCredits || 0)}</div><div class="m-l">cost</div></div>
+        <div class="u-metric"><div class="m-v">${pctOfTeam(u)}%</div><div class="m-l">of team</div></div>
       </div>
       <div class="u-foot">
-        <div class="chips"><span class="chip">${u.topModel}</span><span class="chip">${u.topEditor}</span></div>
+        <div class="chips"><span class="chip">${u.topModel}</span></div>
+        <span>${u.activeDays}/${u.windowDays} days · ${u.acceptanceRate}%</span>
       </div>
     </button>`).join('');
 
@@ -217,6 +227,7 @@ async function openUser(login) {
       user = data.user;
     }
     renderDetail(user);
+    mountCharts(el('detailView'));
     el('overviewView').classList.add('hidden');
     el('detailView').classList.remove('hidden');
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -228,9 +239,9 @@ function closeDetail() {
 }
 
 function renderDetail(u) {
-  const hasDetail = (u.models?.length || u.editors?.length || u.languages?.length);
+  const hasDetail = (u.models?.length || u.languages?.length);
   const view = el('detailView');
-  const ds = u.dailySeries || { dates: [], activity: [], linesAccepted: [] };
+  const ds = u.dailySeries || { dates: [], activity: [] };
   view.innerHTML = `
     <button class="back-btn" id="backBtn">← Back to overview</button>
     <div class="detail-head">
@@ -241,7 +252,7 @@ function renderDetail(u) {
       </div>
       <div class="detail-stats">
         <div class="ds"><div class="v">${fmt(u.aiCredits || 0)}</div><div class="l">AI credits · ${usd(u.aiCredits || 0)}</div></div>
-        <div class="ds"><div class="v">${u.includedCredits ? Math.round(((u.aiCredits || 0) / u.includedCredits) * 100) + '%' : '—'}</div><div class="l">of allowance</div></div>
+        <div class="ds"><div class="v">${pctOfTeam(u)}%</div><div class="l">of team</div></div>
         <div class="ds"><div class="v">${u.activeDays}/${u.windowDays}</div><div class="l">Active days</div></div>
         <div class="ds"><div class="v">${u.acceptanceRate}%</div><div class="l">Accept rate</div></div>
         <div class="ds"><div class="v">${fmt(u.chats)}</div><div class="l">Chats</div></div>
@@ -258,10 +269,9 @@ function renderDetail(u) {
 
     ${hasDetail ? `
     <section class="section">
-      <div class="grid charts-3">
+      <div class="grid charts-2">
         <div class="card"><h3>Modes of usage</h3><p class="card-sub">How this user works with Copilot</p><div id="d-modes"></div></div>
         <div class="card"><h3>Models used</h3><p class="card-sub">Share of acceptances</p><div id="d-models"></div></div>
-        <div class="card"><h3>Editors</h3><p class="card-sub">Where they code</p><div id="d-editors"></div></div>
       </div>
     </section>
     <section class="section">
@@ -275,9 +285,8 @@ function renderDetail(u) {
     { name: 'Acceptances', values: ds.activity, color: ACCENT, area: true },
   ]);
   if (hasDetail) {
-    el('d-modes').innerHTML = donut(u.modes, { valueKey: 'value', labelKey: 'label', size: 170, thickness: 26 });
+    el('d-modes').innerHTML = donut(u.modes, { valueKey: 'value', labelKey: 'label', size: 150, thickness: 24 });
     el('d-models').innerHTML = barList(u.models.map(m => ({ name: m.name, value: m.value })), { colorByIndex: true });
-    el('d-editors').innerHTML = barList(u.editors.map(e => ({ name: e.name, value: e.value })), { colorByIndex: true });
     el('d-langs').innerHTML = barList(
       u.languages.map(l => ({ name: l.name, value: l.acceptances, sub: l.acceptanceRate + '%' })), { format: fmt });
   }

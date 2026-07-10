@@ -15,6 +15,18 @@
     "includedCreditsPerUser": 3900,
     "creditUsd": 0.01
   },
+  "billing": {
+    "cycleStart": "2026-07-01",
+    "cycleEnd": "2026-07-31",
+    "seats": 12,
+    "includedPerUser": 3900,
+    "includedPool": 46800,
+    "grossQuantity": 51199,
+    "includedQuantity": 46800,
+    "additionalQuantity": 4399,
+    "netAmountUsd": 43.99,
+    "creditUsd": 0.01
+  },
   "overview": {
     "kpis": {
       "activeUsers": 12,

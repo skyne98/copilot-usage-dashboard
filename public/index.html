@@ -17,7 +17,6 @@
           <p>GitHub Copilot Enterprise — team &amp; per-user metrics</p>
         </div>
       </div>
-      <button class="icon-btn" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">🌙</button>
     </header>
 
     <!-- Controls -->
@@ -54,23 +53,22 @@
 
       <section class="section">
         <div class="grid charts-2">
+          <div class="card" id="billingCard">
+            <h3>Billing — AI credits</h3>
+            <p class="card-sub" id="billingSub">Included vs additional usage this cycle</p>
+            <div id="billingBody"></div>
+          </div>
           <div class="card">
             <h3>Active &amp; engaged users</h3>
             <p class="card-sub">Daily, over the reporting window</p>
             <div id="usersChart"></div>
             <div class="chart-legend" id="usersLegend"></div>
           </div>
-          <div class="card">
-            <h3>Lines accepted &amp; acceptance rate</h3>
-            <p class="card-sub">Suggestions accepted per day</p>
-            <div id="linesChart"></div>
-            <div class="chart-legend" id="linesLegend"></div>
-          </div>
         </div>
       </section>
 
       <section class="section">
-        <div class="grid charts-3">
+        <div class="grid charts-2">
           <div class="card">
             <h3>Feature mix</h3>
             <p class="card-sub">Where usage happens</p>
@@ -80,11 +78,6 @@
             <h3>Top models</h3>
             <p class="card-sub">By engaged users</p>
             <div id="modelBars"></div>
-          </div>
-          <div class="card">
-            <h3>Top editors</h3>
-            <p class="card-sub">By engaged users</p>
-            <div id="editorBars"></div>
           </div>
         </div>
       </section>
@@ -107,7 +100,6 @@
               <option value="credits">Sort: AI credits (AIC)</option>
               <option value="activity">Sort: Most active</option>
               <option value="acceptance">Sort: Acceptance rate</option>
-              <option value="lines">Sort: Lines accepted</option>
               <option value="name">Sort: Name</option>
             </select>
           </div>
@@ -126,6 +118,7 @@
     </footer>
   </div>
 
+  <div id="chartTooltip" role="tooltip"></div>
   <script type="module" src="app.js"></script>
 </body>
 </html>

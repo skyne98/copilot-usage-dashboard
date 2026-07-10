@@ -1,13 +1,14 @@
 # Copilot Usage Dashboard
 
 > ⚡ **A vibe-coded dashboard to check the usage of AI tokens.** Built for fun to visualize
-> how a team burns through GitHub Copilot — **AI-credit (AIC)** consumption, adoption, and
-> per-user activity — with a modern gradient UI.
+> how a team burns through GitHub Copilot — **AI-credit (AIC)** consumption, included-vs-billed
+> usage, and per-user activity — dressed up in a nostalgic **Windows 2000** skin.
 
-A simple, modern dashboard for **GitHub Copilot (Enterprise)** usage — a team overview,
-a per-user list, and a click-through detail view for each user. Built with a tiny Node
-(Express) backend + a no-build vanilla-JS frontend. Runs on bundled demo data out of the box,
-so you can explore every screen without configuring anything.
+A simple dashboard for **GitHub Copilot (Enterprise)** usage — a team overview, a per-user
+list, and a click-through detail view for each user. Tiny Node (Express) backend + a no-build
+vanilla-JS frontend. Runs on bundled demo data out of the box, so you can explore every screen
+without configuring anything. Charts are interactive (hover for a crosshair + tooltip), and the
+whole UI is a compact classic-Windows theme.
 
 ## AI credits (AIC)
 
@@ -21,13 +22,24 @@ Per-user consumption comes from the metrics API's **`ai_credits_used`** field (i
 `users-1-day` / `users-28-day` reports) — an overall per-user total, not broken down by
 model or feature.
 
+### Included vs additional (billing)
+
+The **included vs billable** split is *not* in the metrics API — it comes from the billing
+usage API (`GET /{orgs|enterprises}/{x}/settings/billing/ai_credit/usage`). Each line carries
+`grossQuantity`, `discountQuantity` (**included**, covered by the monthly pool) and
+`netQuantity` (**additional**, billed at $0.01). The Billing window shows pool consumption with
+an overage bar and the actual **$ billed**. Note: credits are **pooled** at the billing-entity
+level, so there is no per-user allowance — the per-user stat is each user's **share of the
+team's total**, not a personal quota.
+
 ## Screens
-- **Team overview** — KPIs (active users, **AI credits used** + USD, acceptance rate, lines
-  accepted, chats), trend charts, feature mix, and top languages / editors / models.
-- **Individual users** — searchable, sortable cards (default sort: **AI credits**) with an
-  activity sparkline per user.
-- **User detail** — AI credits used ($ + % of monthly allowance), modes of usage, models,
-  editors, languages, and activity over time.
+- **Team overview** — KPIs (active users, **AI credits used** + USD, acceptance rate, chats,
+  PR summaries), a **Billing** window (included / additional / $ billed with an overage bar),
+  an interactive users trend, feature mix, and top languages / models.
+- **Individual users** — searchable, sortable cards (default sort: **AI credits**) showing
+  credits, cost, **% of team**, and an activity sparkline.
+- **User detail** — AI credits ($ + % of team), modes of usage, models, languages, and an
+  interactive activity-over-time chart.
 
 ## Quick start
 

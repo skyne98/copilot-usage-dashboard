@@ -5,6 +5,35 @@
 const num = v => (typeof v === 'number' && isFinite(v) ? v : 0);
 const rate = (acc, sug) => (sug ? Math.round((acc / sug) * 100) : 0);
 
+const INCLUDED_PER_USER = 3900; // Copilot Enterprise monthly AI-credit allowance per seat
+
+/**
+ * Normalize the AI-credit billing usage report into the billing block. The report's usageItems
+ * split each line into gross / discount (included) / net (additional/billable) quantities.
+ * @param {object} usage  response from /settings/billing/ai_credit/usage
+ * @param {number} seats  number of Copilot seats (for the included pool)
+ */
+export function transformBilling(usage, seats = 0) {
+  const items = usage?.usageItems || usage?.usage_items || [];
+  const sum = key => items.reduce((a, it) => a + num(it[key]), 0);
+  const grossQuantity = sum('grossQuantity');
+  const includedQuantity = sum('discountQuantity');
+  const additionalQuantity = sum('netQuantity');
+  const netAmountUsd = +(sum('netAmount') || additionalQuantity * 0.01).toFixed(2);
+  return {
+    cycleStart: usage?.cycleStart || null,
+    cycleEnd: usage?.cycleEnd || null,
+    seats,
+    includedPerUser: INCLUDED_PER_USER,
+    includedPool: seats * INCLUDED_PER_USER,
+    grossQuantity,
+    includedQuantity,
+    additionalQuantity,
+    netAmountUsd,
+    creditUsd: 0.01,
+  };
+}
+
 /**
  * Transform the /copilot/metrics aggregate array (one object per day) into the overview shape.
  * @param {Array} days

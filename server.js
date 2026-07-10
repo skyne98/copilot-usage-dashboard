@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { loadConfig } from './src/config.js';
 import { createClient, GitHubError } from './src/github.js';
-import { transformOverview, transformUsers } from './src/transform.js';
+import { transformOverview, transformUsers, transformBilling } from './src/transform.js';
 
 const root = dirname(fileURLToPath(import.meta.url));
 const cfg = loadConfig();
@@ -57,7 +57,16 @@ async function getData(scope, org) {
     meta.includedCreditsPerUser = 3900;
     meta.creditUsd = 0.01;
 
-    const data = { source: 'live', meta, overview, users, usersDegraded: users.length === 0 };
+    // Billing (included vs additional) comes from a different endpoint/scope — best-effort.
+    let billing = null;
+    try {
+      const usage = await client.getAiCreditUsage(scope, org);
+      billing = transformBilling(usage, users.length);
+    } catch (e) {
+      console.warn('[billing] ai_credit usage unavailable:', e.message);
+    }
+
+    const data = { source: 'live', meta, overview, users, billing, usersDegraded: users.length === 0 };
     liveCache.set(key, { at: Date.now(), data });
     return data;
   } catch (err) {
@@ -86,7 +95,7 @@ app.get('/api/config', (_req, res) => {
 app.get('/api/overview', async (req, res) => {
   try {
     const data = await getData(scopeOf(req), req.query.org);
-    res.json({ source: data.source, meta: data.meta, overview: data.overview, sampleReason: data.sampleReason });
+    res.json({ source: data.source, meta: data.meta, overview: data.overview, billing: data.billing || null, sampleReason: data.sampleReason });
   } catch (err) { sendErr(res, err); }
 });
 
