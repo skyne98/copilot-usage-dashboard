@@ -14,8 +14,8 @@ const state = {
 };
 
 // ---------- helpers ----------
-async function api(path) {
-  const res = await fetch(path);
+async function api(path, options) {
+  const res = await fetch(path, options);
   const body = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(body.error || `Request failed (${res.status})`);
   return body;
@@ -75,6 +75,7 @@ async function fetchAll() {
     renderOverview();
     renderUsers();
     mountCharts();
+    saveSnapshot(ov, us);
   } catch (e) {
     setError(e.message);
   } finally {
@@ -84,6 +85,24 @@ async function fetchAll() {
   }
 }
 fetchBtn.addEventListener('click', fetchAll);
+
+// persist the pulled usage to the server-side JSON store (add-or-update by date)
+async function saveSnapshot(ov, us) {
+  const status = el('snapshotStatus');
+  try {
+    const r = await api('/api/snapshot', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        date: ov.meta?.endDate,
+        meta: ov.meta, billing: ov.billing, overview: ov.overview, users: us.users || [],
+      }),
+    });
+    if (status) status.textContent = `💾 Saved snapshot for ${r.date} · ${r.count} on file`;
+  } catch (e) {
+    if (status) status.textContent = `Snapshot not saved: ${e.message}`;
+  }
+}
 
 function handleSource(ov) {
   const demo = ov.source === 'sample';
@@ -107,8 +126,8 @@ function renderOverview() {
   const kpis = [
     { label: 'Active users', value: fmt(k.activeUsers), sub: `${k.engagedUsers} engaged` },
     { label: 'AI credits used', value: fmt(k.aiCredits || 0), sub: `≈ ${usd(k.aiCredits || 0)} · AIC` },
-    { label: 'Acceptance rate', value: k.acceptanceRate + '%', sub: `${fmt(k.totalAcceptances)} accepted` },
-    { label: 'IDE chats', value: fmt(k.ideChats), sub: 'chat interactions' },
+    { label: 'Agent sessions', value: fmt(k.agentSessions || 0), sub: 'autonomous runs' },
+    { label: 'Chats', value: fmt(k.ideChats), sub: 'chat interactions' },
     { label: 'PR summaries', value: fmt(k.prSummaries), sub: 'generated' },
   ];
   el('kpiGrid').innerHTML = kpis.map(x => `
@@ -129,11 +148,8 @@ function renderOverview() {
   el('usersLegend').innerHTML = legend([['Active', CATEGORICAL[0]], ['Engaged', CATEGORICAL[1]]]);
 
   el('featureDonut').innerHTML = donut(o.featureSplit, { valueKey: 'value', labelKey: 'label' });
-  el('modelBars').innerHTML = barList(o.topModels.slice(0, 6).map(m => ({ name: m.name, value: m.engagedUsers })), { colorByIndex: true });
-  el('languageBars').innerHTML = barList(
-    o.topLanguages.slice(0, 8).map(l => ({ name: l.name, value: l.acceptances, sub: l.acceptanceRate + '%' })),
-    { format: fmt }
-  );
+  el('modelBars').innerHTML = barList(
+    o.topModels.slice(0, 6).map(m => ({ name: m.name, value: m.value })), { colorByIndex: true, format: fmt });
 }
 function legend(pairs) {
   return pairs.map(([name, c]) => `<span><i style="background:${c}"></i>${name}</span>`).join('');
@@ -142,6 +158,13 @@ function legend(pairs) {
 // each user's share of the team's total AI credits
 function pctOfTeam(u) {
   return state.teamCredits ? Math.round(((u.aiCredits || 0) / state.teamCredits) * 100) : 0;
+}
+
+// per-user credit-limit tag: over-limit (red) or % of limit
+function limitTag(u) {
+  if (u.limit == null) return `<span class="chip">no limit</span>`;
+  if ((u.overLimit || 0) > 0) return `<span class="chip over">over limit +${fmt(u.overLimit)}</span>`;
+  return `<span class="chip">${u.pctOfLimit}% of ${fmt(u.limit)}</span>`;
 }
 
 function renderBilling() {
@@ -169,8 +192,9 @@ function sortedFilteredUsers() {
     !state.search || u.login.toLowerCase().includes(state.search) || (u.name || '').toLowerCase().includes(state.search));
   const cmp = {
     credits: (a, b) => (b.aiCredits || 0) - (a.aiCredits || 0),
+    overlimit: (a, b) => (b.overLimit || 0) - (a.overLimit || 0) || (b.pctOfLimit || 0) - (a.pctOfLimit || 0),
+    agent: (a, b) => (b.agentSessions || 0) - (a.agentSessions || 0),
     activity: (a, b) => b.activeDays - a.activeDays,
-    acceptance: (a, b) => b.acceptanceRate - a.acceptanceRate,
     name: (a, b) => (a.name || a.login).localeCompare(b.name || b.login),
   }[state.sort];
   return list.sort(cmp);
@@ -203,12 +227,12 @@ function renderUsers() {
       ${sparkline(u.activitySeries || [], { width: 210, height: 26 })}
       <div class="u-metrics">
         <div class="u-metric"><div class="m-v">${fmt(u.aiCredits || 0)}</div><div class="m-l">AI credits</div></div>
-        <div class="u-metric"><div class="m-v">${usd(u.aiCredits || 0)}</div><div class="m-l">cost</div></div>
+        <div class="u-metric"><div class="m-v">${fmt(u.agentSessions || 0)}</div><div class="m-l">agent</div></div>
         <div class="u-metric"><div class="m-v">${pctOfTeam(u)}%</div><div class="m-l">of team</div></div>
       </div>
       <div class="u-foot">
-        <div class="chips"><span class="chip">${u.topModel}</span></div>
-        <span>${u.activeDays}/${u.windowDays} days · ${u.acceptanceRate}%</span>
+        ${limitTag(u)}
+        <span>${usd(u.aiCredits || 0)}</span>
       </div>
     </button>`).join('');
 
@@ -239,9 +263,14 @@ function closeDetail() {
 }
 
 function renderDetail(u) {
-  const hasDetail = (u.models?.length || u.languages?.length);
+  const hasDetail = (u.models?.length || u.modes?.length);
   const view = el('detailView');
-  const ds = u.dailySeries || { dates: [], activity: [] };
+  const ds = u.dailySeries || { dates: [], credits: [] };
+  const overStat = u.limit == null
+    ? `<div class="ds"><div class="v">—</div><div class="l">No limit set</div></div>`
+    : (u.overLimit > 0
+        ? `<div class="ds over"><div class="v">+${fmt(u.overLimit)}</div><div class="l">Over limit</div></div>`
+        : `<div class="ds"><div class="v">${u.pctOfLimit}%</div><div class="l">of limit</div></div>`);
   view.innerHTML = `
     <button class="back-btn" id="backBtn">← Back to overview</button>
     <div class="detail-head">
@@ -252,43 +281,39 @@ function renderDetail(u) {
       </div>
       <div class="detail-stats">
         <div class="ds"><div class="v">${fmt(u.aiCredits || 0)}</div><div class="l">AI credits · ${usd(u.aiCredits || 0)}</div></div>
+        <div class="ds"><div class="v">${u.limit == null ? '—' : fmt(u.limit)}</div><div class="l">Limit</div></div>
+        ${overStat}
         <div class="ds"><div class="v">${pctOfTeam(u)}%</div><div class="l">of team</div></div>
-        <div class="ds"><div class="v">${u.activeDays}/${u.windowDays}</div><div class="l">Active days</div></div>
-        <div class="ds"><div class="v">${u.acceptanceRate}%</div><div class="l">Accept rate</div></div>
+        <div class="ds"><div class="v">${fmt(u.agentSessions || 0)}</div><div class="l">Agent sessions</div></div>
         <div class="ds"><div class="v">${fmt(u.chats)}</div><div class="l">Chats</div></div>
       </div>
     </div>
 
     <section class="section">
       <div class="card">
-        <h3>Activity over time</h3>
-        <p class="card-sub">Daily code acceptances across the window</p>
-        <div id="d-activity"></div>
+        <h3>Used tokens over time</h3>
+        <p class="card-sub">Daily AI-credit consumption across the window${u.limit != null ? ` · limit ${fmt(u.limit)}` : ''}</p>
+        <div id="d-tokens"></div>
       </div>
     </section>
 
     ${hasDetail ? `
     <section class="section">
       <div class="grid charts-2">
-        <div class="card"><h3>Modes of usage</h3><p class="card-sub">How this user works with Copilot</p><div id="d-modes"></div></div>
-        <div class="card"><h3>Models used</h3><p class="card-sub">Share of acceptances</p><div id="d-models"></div></div>
+        <div class="card"><h3>Agentic modes</h3><p class="card-sub">Chat · agent sessions · PR summaries</p><div id="d-modes"></div></div>
+        <div class="card"><h3>Models used</h3><p class="card-sub">By AI-credit usage</p><div id="d-models"></div></div>
       </div>
-    </section>
-    <section class="section">
-      <div class="card"><h3>Languages</h3><p class="card-sub">Acceptances &amp; acceptance rate</p><div id="d-langs"></div></div>
     </section>` : `
-    <section class="section"><div class="card"><p class="muted">Detailed per-mode / model / language breakdown isn't available for this user — only aggregate activity was reported.</p></div></section>`}
+    <section class="section"><div class="card"><p class="muted">Detailed breakdown isn't available for this user — only aggregate usage was reported.</p></div></section>`}
   `;
 
   el('backBtn').addEventListener('click', closeDetail);
-  el('d-activity').innerHTML = lineChart(ds.dates, [
-    { name: 'Acceptances', values: ds.activity, color: ACCENT, area: true },
+  el('d-tokens').innerHTML = lineChart(ds.dates, [
+    { name: 'AI credits', values: ds.credits, color: ACCENT, area: true },
   ]);
   if (hasDetail) {
     el('d-modes').innerHTML = donut(u.modes, { valueKey: 'value', labelKey: 'label', size: 150, thickness: 24 });
-    el('d-models').innerHTML = barList(u.models.map(m => ({ name: m.name, value: m.value })), { colorByIndex: true });
-    el('d-langs').innerHTML = barList(
-      u.languages.map(l => ({ name: l.name, value: l.acceptances, sub: l.acceptanceRate + '%' })), { format: fmt });
+    el('d-models').innerHTML = barList(u.models.map(m => ({ name: m.name, value: m.value })), { colorByIndex: true, format: fmt });
   }
 }
 

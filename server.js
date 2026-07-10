@@ -1,7 +1,7 @@
 // Express server: serves the static frontend and proxies the GitHub Copilot Metrics API.
 // Falls back to sample-data.json whenever no live API connection is available or a call fails.
 import express from 'express';
-import { readFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { loadConfig } from './src/config.js';
@@ -17,6 +17,21 @@ let sampleCache = null;
 function sampleData() {
   if (!sampleCache) sampleCache = JSON.parse(readFileSync(join(root, 'sample-data.json'), 'utf8'));
   return sampleCache;
+}
+
+// ---- persisted snapshot store: data/history.json, keyed by date (add-or-update) ----
+const DATA_DIR = join(root, 'data');
+const HISTORY_FILE = join(DATA_DIR, 'history.json');
+function readHistory() {
+  try { return JSON.parse(readFileSync(HISTORY_FILE, 'utf8')); } catch { return {}; }
+}
+function saveSnapshot(snapshot) {
+  const date = snapshot?.date || new Date().toISOString().slice(0, 10);
+  if (!existsSync(DATA_DIR)) mkdirSync(DATA_DIR, { recursive: true });
+  const history = readHistory();
+  history[date] = { ...snapshot, date, savedAt: new Date().toISOString() }; // overwrite if date exists
+  writeFileSync(HISTORY_FILE, JSON.stringify(history, null, 2));
+  return { date, count: Object.keys(history).length };
 }
 
 // ---- in-memory cache of the last live fetch per scope/org ----
@@ -52,8 +67,10 @@ async function getData(scope, org) {
       console.warn('[users] per-user report unavailable:', e.message);
     }
 
-    // ai_credits_used is per-user only; roll it up for the overview KPI.
+    // Per-user agentic metrics roll up for the overview KPIs.
     overview.kpis.aiCredits = users.reduce((a, u) => a + (u.aiCredits || 0), 0);
+    overview.kpis.agentSessions = users.reduce((a, u) => a + (u.agentSessions || 0), 0);
+    if (overview.featureSplit?.[1]) overview.featureSplit[1].value = overview.kpis.agentSessions;
     meta.includedCreditsPerUser = 3900;
     meta.creditUsd = 0.01;
 
@@ -80,6 +97,27 @@ async function getData(scope, org) {
 
 // ---------------------------------------------------------------------------
 const app = express();
+app.use(express.json({ limit: '4mb' }));
+
+// Persist a pulled usage snapshot (add-or-update by date) so it can be reused later.
+app.post('/api/snapshot', (req, res) => {
+  try {
+    const { date, meta, billing, overview, users } = req.body || {};
+    const result = saveSnapshot({ date: date || meta?.endDate, meta, billing, overview, users });
+    res.json({ saved: true, ...result });
+  } catch (err) { sendErr(res, err); }
+});
+
+// List saved snapshot dates (for later reuse in a table).
+app.get('/api/snapshots', (_req, res) => {
+  const history = readHistory();
+  res.json({
+    count: Object.keys(history).length,
+    snapshots: Object.values(history)
+      .map(s => ({ date: s.date, savedAt: s.savedAt, users: s.users?.length || 0, aiCredits: s.overview?.kpis?.aiCredits ?? null }))
+      .sort((a, b) => (a.date < b.date ? 1 : -1)),
+  });
+});
 
 app.get('/api/config', (_req, res) => {
   res.json({

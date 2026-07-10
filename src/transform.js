@@ -117,17 +117,18 @@ export function transformOverview(days, meta = {}) {
         engagedUsers: engagedUsers.length ? Math.max(...engagedUsers) : 0,
         totalSuggestions, totalAcceptances,
         acceptanceRate: rate(totalAcceptances, totalSuggestions),
-        linesAccepted: totalLinesAccepted,
         ideChats: totalChats, prSummaries: totalPRs,
-        aiCredits: 0, // filled from per-user ai_credits_used (see server.js), not in the aggregate feed
+        agentSessions: 0, // filled from per-user rollup in server.js
+        aiCredits: 0,     // filled from per-user ai_credits_used (see server.js)
       },
-      series: { dates, activeUsers, engagedUsers, linesAccepted, acceptanceRate: acceptanceRateSeries },
+      series: { dates, activeUsers, engagedUsers, credits: linesAccepted },
+      // Agentic features only (completions are free / not tracked here).
       featureSplit: [
-        { label: 'Code completions', value: totalAcceptances },
-        { label: 'IDE chat', value: totalChats },
+        { label: 'Chat', value: totalChats },
+        { label: 'Agent sessions', value: 0 },
         { label: 'PR summaries', value: totalPRs },
       ],
-      topLanguages, topEditors, topModels,
+      topModels,
     },
   };
 }
@@ -151,6 +152,8 @@ export function transformUsers(dayReports /* [{date, files:[...]}] */) {
         u.acceptances += num(rec.total_code_acceptances ?? rec.acceptances);
         u.linesAccepted += num(rec.total_code_lines_accepted ?? rec.lines_accepted);
         u.chats += num(rec.total_chats ?? rec.chats);
+        u.agentSessions += num(rec.total_agent_sessions ?? rec.agent_sessions ?? rec.total_agent_requests);
+        u.prSummaries += num(rec.total_pr_summaries_created ?? rec.pr_summaries);
         // AI credits consumed per user (usage-based billing, GA 2026-06). Overall per-user
         // total — GitHub does not break ai_credits_used down by model/feature/surface.
         u.aiCredits += num(rec.ai_credits_used ?? rec.ai_credits_consumed);
@@ -165,31 +168,37 @@ function emptyUser(login) {
   return {
     login, name: login, team: null,
     avatarUrl: `https://avatars.githubusercontent.com/${login}`,
-    suggestions: 0, acceptances: 0, linesAccepted: 0, chats: 0, prSummaries: 0, aiCredits: 0,
+    chats: 0, prSummaries: 0, agentSessions: 0, aiCredits: 0,
     _days: new Map(),
   };
 }
 
-function finalizeUser(u) {
+// Optional admin-set per-user credit budgets, keyed by login (populated in server.js if available).
+function finalizeUser(u, limits = {}) {
   const dates = [...u._days.keys()].sort();
-  const activity = dates.map(d => u._days.get(d));
+  const weights = dates.map(d => u._days.get(d));
+  const wTotal = weights.reduce((a, b) => a + b, 0) || 1;
+  // No per-day credit feed live — distribute the total across active days by weight.
+  const credits = weights.map(w => Math.round(u.aiCredits * (w / wTotal)));
   delete u._days;
+  const limit = limits[u.login] ?? null;
   return {
     ...u,
     windowDays: dates.length,
-    activeDays: activity.filter(v => v > 0).length,
-    acceptanceRate: rate(u.acceptances, u.suggestions),
-    includedCredits: 3900, // Copilot Enterprise monthly AI-credit allowance per user
-    topModel: '—', topEditor: '—', topLanguage: '—',
+    activeDays: weights.filter(v => v > 0).length,
+    limit,
+    overLimit: limit ? Math.max(0, u.aiCredits - limit) : 0,
+    pctOfLimit: limit ? Math.round((u.aiCredits / limit) * 100) : null,
+    topModel: '—',
     lastActive: dates[dates.length - 1] || null,
-    status: activity.slice(-7).some(v => v > 0) ? 'active' : 'idle',
-    activitySeries: activity,
+    status: weights.slice(-7).some(v => v > 0) ? 'active' : 'idle',
+    activitySeries: credits,
     modes: [
-      { label: 'Code completions', value: u.acceptances },
-      { label: 'IDE chat', value: u.chats },
+      { label: 'Chat', value: u.chats },
+      { label: 'Agent sessions', value: u.agentSessions },
       { label: 'PR summaries', value: u.prSummaries },
     ],
-    models: [], editors: [], languages: [],
-    dailySeries: { dates, activity, linesAccepted: activity.map(v => v * 3) },
+    models: [],
+    dailySeries: { dates, credits },
   };
 }
