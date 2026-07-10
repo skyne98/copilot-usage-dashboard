@@ -1,4 +1,6 @@
 import { sparkline, lineChart, barList, donut, progressBar, mountCharts, fmt, CATEGORICAL, ACCENT } from './charts.js';
+import { bootClippy, clippyCommentOverview, clippyCommentUser } from './clippy.js';
+import { initChatbot } from './chatbot.js';
 
 const el = id => document.getElementById(id);
 
@@ -44,6 +46,10 @@ async function init() {
     }
     syncScopeUI();
   } catch (e) { setError(e.message); }
+  // Wake up Clippy — he fits right in with the Win2k desktop theme. 📎
+  bootClippy();
+  // Rule-based chatbot (no AI): its own chat window + talks through Clippy.
+  initChatbot({ getState: () => state });
   // Auto-load once so the dashboard is never empty on first paint.
   fetchAll();
 }
@@ -75,6 +81,7 @@ async function fetchAll() {
     renderOverview();
     renderUsers();
     mountCharts();
+    clippyCommentOverview(state);
     saveSnapshot(ov, us);
   } catch (e) {
     setError(e.message);
@@ -252,6 +259,7 @@ async function openUser(login) {
     }
     renderDetail(user);
     mountCharts(el('detailView'));
+    clippyCommentUser(user);
     el('overviewView').classList.add('hidden');
     el('detailView').classList.remove('hidden');
     window.scrollTo({ top: 0, behavior: 'smooth' });
