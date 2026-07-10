@@ -19,5 +19,10 @@
     "scope": "enterprise",
     "days": 28
   },
+  "limits": {
+    "//": "Optional admin-set per-user AI-credit budgets, keyed by login. GitHub has no public per-user Copilot budget API, so these are configured here. Users over their limit show a red 'over limit +N' tag and sort to the top under 'Sort: Over limit'. Omit a login (or set limits to {}) to show 'no limit'.",
+    "alice": 500,
+    "bob": 1000
+  },
   "useSampleDataFallback": true
 }

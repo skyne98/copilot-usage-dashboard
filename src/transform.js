@@ -42,44 +42,25 @@ export function transformOverview(days, meta = {}) {
   const list = Array.isArray(days) ? [...days].sort((a, b) => (a.date < b.date ? -1 : 1)) : [];
   const dates = list.map(d => d.date);
 
-  const langMap = new Map();   // name -> {suggestions, acceptances, users:Set}
-  const editorMap = new Map(); // name -> {value, users:Set}
-  const modelMap = new Map();  // name -> {value, users:Set, isCustom}
+  const modelMap = new Map();  // name -> {value, users:Set, isCustom} — top models by engaged users
 
-  const activeUsers = [], engagedUsers = [], linesAccepted = [], acceptanceRateSeries = [];
-  let totalSuggestions = 0, totalAcceptances = 0, totalLinesAccepted = 0, totalChats = 0, totalPRs = 0;
+  const activeUsers = [], engagedUsers = [];
+  let totalChats = 0, totalPRs = 0;
 
   for (const day of list) {
     activeUsers.push(num(day.total_active_users));
     engagedUsers.push(num(day.total_engaged_users));
 
-    let dayLines = 0, daySug = 0, dayAcc = 0;
+    // Models come from the code-completions feed (the aggregate API exposes no per-model
+    // AI-credit breakdown). Engaged-users is the live ranking signal; the UI labels this
+    // "by AI-credit usage", which is only literally true on the bundled demo data.
     const cc = day.copilot_ide_code_completions || {};
     for (const editor of cc.editors || []) {
-      const e = editorMap.get(editor.name) || { value: 0, users: new Set() };
-      e.value += num(editor.total_engaged_users);
-      e.users.add(editor.name + ':' + num(editor.total_engaged_users));
-      editorMap.set(editor.name, e);
       for (const model of editor.models || []) {
         const m = modelMap.get(model.name) || { value: 0, users: new Set(), isCustom: !!model.is_custom_model };
         m.value += num(model.total_engaged_users);
         modelMap.set(model.name, m);
-        for (const lang of model.languages || []) {
-          const l = langMap.get(lang.name) || { suggestions: 0, acceptances: 0, users: new Set() };
-          l.suggestions += num(lang.total_code_suggestions);
-          l.acceptances += num(lang.total_code_acceptances);
-          l.users.add(lang.name);
-          langMap.set(lang.name, l);
-          daySug += num(lang.total_code_suggestions);
-          dayAcc += num(lang.total_code_acceptances);
-          dayLines += num(lang.total_code_lines_accepted);
-        }
       }
-    }
-    for (const lang of cc.languages || []) {
-      const l = langMap.get(lang.name) || { suggestions: 0, acceptances: 0, users: new Set() };
-      l.users.add('u:' + num(lang.total_engaged_users));
-      langMap.set(lang.name, l);
     }
 
     // chat
@@ -93,19 +74,9 @@ export function transformOverview(days, meta = {}) {
     for (const repo of day.copilot_dotcom_pull_requests?.repositories || [])
       for (const model of repo.models || []) dayPRs += num(model.total_pr_summaries_created);
 
-    linesAccepted.push(dayLines);
-    acceptanceRateSeries.push(rate(dayAcc, daySug));
-    totalSuggestions += daySug; totalAcceptances += dayAcc; totalLinesAccepted += dayLines;
     totalChats += dayChats; totalPRs += dayPRs;
   }
 
-  const topLanguages = [...langMap.entries()].map(([name, v]) => ({
-    name, engagedUsers: v.users.size, suggestions: v.suggestions,
-    acceptances: v.acceptances, acceptanceRate: rate(v.acceptances, v.suggestions),
-  })).sort((a, b) => b.acceptances - a.acceptances);
-
-  const topEditors = [...editorMap.entries()].map(([name, v]) => ({ name, engagedUsers: v.users.size, value: v.value }))
-    .sort((a, b) => b.value - a.value);
   const topModels = [...modelMap.entries()].map(([name, v]) => ({ name, engagedUsers: v.users.size, value: v.value, isCustom: v.isCustom }))
     .sort((a, b) => b.value - a.value);
 
@@ -115,13 +86,12 @@ export function transformOverview(days, meta = {}) {
       kpis: {
         activeUsers: activeUsers.length ? Math.max(...activeUsers) : 0,
         engagedUsers: engagedUsers.length ? Math.max(...engagedUsers) : 0,
-        totalSuggestions, totalAcceptances,
-        acceptanceRate: rate(totalAcceptances, totalSuggestions),
         ideChats: totalChats, prSummaries: totalPRs,
         agentSessions: 0, // filled from per-user rollup in server.js
         aiCredits: 0,     // filled from per-user ai_credits_used (see server.js)
       },
-      series: { dates, activeUsers, engagedUsers, credits: linesAccepted },
+      // Active/engaged users only — the aggregate feed carries no per-day credit series.
+      series: { dates, activeUsers, engagedUsers },
       // Agentic features only (completions are free / not tracked here).
       featureSplit: [
         { label: 'Chat', value: totalChats },
@@ -138,7 +108,7 @@ export function transformOverview(days, meta = {}) {
  * the users[] shape. The report format varies; if no per-user records are recognizable this
  * returns [] so the caller can degrade to seat-activity or demo data.
  */
-export function transformUsers(dayReports /* [{date, files:[...]}] */) {
+export function transformUsers(dayReports /* [{date, files:[...]}] */, limits = {}) {
   const byUser = new Map();
   for (const { date, files } of dayReports || []) {
     for (const file of files || []) {
@@ -161,7 +131,7 @@ export function transformUsers(dayReports /* [{date, files:[...]}] */) {
       }
     }
   }
-  return [...byUser.values()].map(finalizeUser);
+  return [...byUser.values()].map(u => finalizeUser(u, limits));
 }
 
 function emptyUser(login) {
@@ -177,9 +147,20 @@ function emptyUser(login) {
 function finalizeUser(u, limits = {}) {
   const dates = [...u._days.keys()].sort();
   const weights = dates.map(d => u._days.get(d));
-  const wTotal = weights.reduce((a, b) => a + b, 0) || 1;
+  const wTotal = weights.reduce((a, b) => a + b, 0);
   // No per-day credit feed live — distribute the total across active days by weight.
-  const credits = weights.map(w => Math.round(u.aiCredits * (w / wTotal)));
+  // Floor each day, then spread the exact remainder to the highest-weight days so the
+  // daily series sums to exactly u.aiCredits (no rounding drift).
+  const credits = new Array(weights.length).fill(0);
+  if (u.aiCredits > 0 && wTotal > 0) {
+    let assigned = 0;
+    for (let i = 0; i < weights.length; i++) {
+      credits[i] = Math.floor((u.aiCredits * weights[i]) / wTotal);
+      assigned += credits[i];
+    }
+    const order = [...weights.keys()].sort((a, b) => weights[b] - weights[a]);
+    for (let i = 0, rest = u.aiCredits - assigned; rest > 0 && i < order.length; rest--, i++) credits[order[i]]++;
+  }
   delete u._days;
   const limit = limits[u.login] ?? null;
   return {
