@@ -96,6 +96,7 @@ async function saveSnapshot(ov, us) {
       body: JSON.stringify({
         date: ov.meta?.endDate,
         meta: ov.meta, billing: ov.billing, overview: ov.overview, users: us.users || [],
+        source: ov.source,
       }),
     });
     if (status) status.textContent = `💾 Saved snapshot for ${r.date} · ${r.count} on file`;
