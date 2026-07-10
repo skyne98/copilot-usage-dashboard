@@ -32,14 +32,30 @@ an overage bar and the actual **$ billed**. Note: credits are **pooled** at the 
 level, so there is no per-user allowance — the per-user stat is each user's **share of the
 team's total**, not a personal quota.
 
+## Agentic metrics only
+
+This dashboard focuses on **agentic** usage — Chat, autonomous **agent sessions**, and PR
+summaries (the work that consumes AI credits). Code completions / suggestion-acceptance
+metrics are intentionally **not** shown; they're free and not the point.
+
+Each user also carries an admin-set **credit limit**; the dashboard surfaces **usage vs limit
+and over-limit** (per-user budgets, from the budgets API when live).
+
 ## Screens
-- **Team overview** — KPIs (active users, **AI credits used** + USD, acceptance rate, chats,
+- **Team overview** — KPIs (active users, **AI credits used** + USD, **agent sessions**, chats,
   PR summaries), a **Billing** window (included / additional / $ billed with an overage bar),
-  an interactive users trend, feature mix, and top languages / models.
-- **Individual users** — searchable, sortable cards (default sort: **AI credits**) showing
-  credits, cost, **% of team**, and an activity sparkline.
-- **User detail** — AI credits ($ + % of team), modes of usage, models, languages, and an
-  interactive activity-over-time chart.
+  an interactive users trend, the agentic feature mix, and top models by AI-credit usage.
+- **Individual users** — searchable, sortable cards (sort by AI credits / **over limit** /
+  agent sessions) showing credits, agent sessions, **% of team**, and a **limit / over-limit**
+  tag.
+- **User detail** — AI credits ($), **limit + over-limit**, % of team, agent sessions, chats,
+  a **Used-tokens-over-time** chart, agentic modes, and models by AI-credit usage.
+
+## Saved snapshots
+
+Every **Fetch usage** persists the pulled dataset to `data/history.json`, keyed by report
+date — **add-or-update** (re-fetching the same date overwrites that entry). `GET /api/snapshots`
+lists what's saved, so history can be reused later. The `data/` dir is git-ignored.
 
 ## Quick start
 

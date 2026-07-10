@@ -2,6 +2,7 @@
 // Falls back to sample-data.json whenever no live API connection is available or a call fails.
 import express from 'express';
 import { readFileSync } from 'node:fs';
+import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { loadConfig } from './src/config.js';
@@ -11,12 +12,35 @@ import { transformOverview, transformUsers, transformBilling } from './src/trans
 const root = dirname(fileURLToPath(import.meta.url));
 const cfg = loadConfig();
 const client = cfg.canUseLiveApi ? createClient(cfg) : null;
+// Optional admin-set per-user credit limits, keyed by login (from config.json `limits`).
+// GitHub exposes no public per-user Copilot budget API, so this is admin-configured.
+const userLimits = cfg.limits || {};
 
 // ---- sample data (lazy, cached) ----
 let sampleCache = null;
 function sampleData() {
   if (!sampleCache) sampleCache = JSON.parse(readFileSync(join(root, 'sample-data.json'), 'utf8'));
   return sampleCache;
+}
+
+// ---- persisted snapshot store: data/history.json, keyed by date (add-or-update) ----
+const DATA_DIR = join(root, 'data');
+const HISTORY_FILE = join(DATA_DIR, 'history.json');
+async function readHistory() {
+  try {
+    return JSON.parse(await readFile(HISTORY_FILE, 'utf8'));
+  } catch (err) {
+    if (err.code !== 'ENOENT') console.warn('[history] could not read data/history.json:', err.message);
+    return {};
+  }
+}
+async function saveSnapshot(snapshot) {
+  const date = snapshot?.date || new Date().toISOString().slice(0, 10);
+  await mkdir(DATA_DIR, { recursive: true });
+  const history = await readHistory();
+  history[date] = { ...snapshot, date, savedAt: new Date().toISOString() }; // overwrite if date exists
+  await writeFile(HISTORY_FILE, JSON.stringify(history, null, 2));
+  return { date, count: Object.keys(history).length };
 }
 
 // ---- in-memory cache of the last live fetch per scope/org ----
@@ -46,14 +70,17 @@ async function getData(scope, org) {
       const latest = meta.endDate;
       if (latest) {
         const report = await client.getDayReport(scope, org, latest);
-        users = transformUsers([{ date: latest, files: report.files }]);
+        users = transformUsers([{ date: latest, files: report.files }], userLimits);
       }
     } catch (e) {
       console.warn('[users] per-user report unavailable:', e.message);
     }
 
-    // ai_credits_used is per-user only; roll it up for the overview KPI.
+    // Per-user agentic metrics roll up for the overview KPIs.
     overview.kpis.aiCredits = users.reduce((a, u) => a + (u.aiCredits || 0), 0);
+    overview.kpis.agentSessions = users.reduce((a, u) => a + (u.agentSessions || 0), 0);
+    const agentSeg = overview.featureSplit?.find(f => f.label === 'Agent sessions');
+    if (agentSeg) agentSeg.value = overview.kpis.agentSessions;
     meta.includedCreditsPerUser = 3900;
     meta.creditUsd = 0.01;
 
@@ -80,6 +107,31 @@ async function getData(scope, org) {
 
 // ---------------------------------------------------------------------------
 const app = express();
+app.use(express.json({ limit: '4mb' }));
+
+// Persist a pulled usage snapshot (add-or-update by date) so it can be reused later.
+app.post('/api/snapshot', async (req, res) => {
+  try {
+    const { date, meta, billing, overview, users, source } = req.body || {};
+    if (overview != null && typeof overview !== 'object')
+      return res.status(400).json({ error: 'overview must be an object' });
+    if (users != null && !Array.isArray(users))
+      return res.status(400).json({ error: 'users must be an array' });
+    const result = await saveSnapshot({ date: date || meta?.endDate, meta, billing, overview, users, source });
+    res.json({ saved: true, ...result });
+  } catch (err) { sendErr(res, err); }
+});
+
+// List saved snapshot dates (for later reuse in a table).
+app.get('/api/snapshots', async (_req, res) => {
+  const history = await readHistory();
+  res.json({
+    count: Object.keys(history).length,
+    snapshots: Object.values(history)
+      .map(s => ({ date: s.date, savedAt: s.savedAt, users: s.users?.length || 0, aiCredits: s.overview?.kpis?.aiCredits ?? null, source: s.source ?? null }))
+      .sort((a, b) => (a.date < b.date ? 1 : -1)),
+  });
+});
 
 app.get('/api/config', (_req, res) => {
   res.json({

@@ -223,6 +223,8 @@ svg .hit { cursor: crosshair; }
 .u-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 10.5px; color: var(--ink-soft); }
 .u-foot .chips { display: flex; gap: 4px; flex-wrap: wrap; }
 .chip { background: var(--silver); border: 1px solid #808080; padding: 1px 6px; font-size: 10px; color: var(--ink-soft); }
+.chip.over { background: #ffdede; border-color: #800000; color: #800000; font-weight: 700; }
+.detail-stats .ds.over .v { color: var(--over); }
 
 /* ---------- User detail ---------- */
 .detail-head { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; flex-wrap: wrap;

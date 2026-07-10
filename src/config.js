@@ -10,6 +10,7 @@ const DEFAULTS = {
   github: { token: '', apiBaseUrl: 'https://api.github.com', apiVersion: '2022-11-28' },
   targets: { enterprise: '', organizations: [], teams: [] },
   defaults: { scope: 'enterprise', days: 28 },
+  limits: {},
   useSampleDataFallback: true,
 };
 
@@ -38,6 +39,7 @@ export function loadConfig() {
   cfg.server.port = Number(cfg.server.port) || 3000;
   cfg.targets.organizations = (cfg.targets.organizations || []).filter(Boolean);
   cfg.targets.teams = (cfg.targets.teams || []).filter(Boolean);
+  cfg.limits = (cfg.limits && typeof cfg.limits === 'object' && !Array.isArray(cfg.limits)) ? cfg.limits : {};
 
   // A "live" connection needs a token and at least one target.
   const hasTarget = Boolean(cfg.targets.enterprise) || cfg.targets.organizations.length > 0;

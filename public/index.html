@@ -35,6 +35,7 @@
       <button class="btn-primary" id="fetchBtn">
         <span class="btn-label">Fetch usage</span>
       </button>
+      <div class="field" style="width:100%"><span class="muted" id="snapshotStatus"></span></div>
     </div>
 
     <!-- Banners -->
@@ -70,23 +71,15 @@
       <section class="section">
         <div class="grid charts-2">
           <div class="card">
-            <h3>Feature mix</h3>
-            <p class="card-sub">Where usage happens</p>
+            <h3>Agentic feature mix</h3>
+            <p class="card-sub">Chat · agent sessions · PR summaries</p>
             <div id="featureDonut"></div>
           </div>
           <div class="card">
             <h3>Top models</h3>
-            <p class="card-sub">By engaged users</p>
+            <p class="card-sub">By AI-credit usage</p>
             <div id="modelBars"></div>
           </div>
-        </div>
-      </section>
-
-      <section class="section">
-        <div class="card">
-          <h3>Top languages</h3>
-          <p class="card-sub">Acceptances &amp; acceptance rate</p>
-          <div id="languageBars"></div>
         </div>
       </section>
 
@@ -98,8 +91,9 @@
           <div class="field">
             <select id="userSort">
               <option value="credits">Sort: AI credits (AIC)</option>
+              <option value="overlimit">Sort: Over limit</option>
+              <option value="agent">Sort: Agent sessions</option>
               <option value="activity">Sort: Most active</option>
-              <option value="acceptance">Sort: Acceptance rate</option>
               <option value="name">Sort: Name</option>
             </select>
           </div>
