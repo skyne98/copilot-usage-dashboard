@@ -270,13 +270,18 @@ footer a { color: #000080; }
 .chat-avatar { font-size: 13px; line-height: 1; flex: none; }
 .chat-title { font-weight: 700; font-size: 11px; text-shadow: 1px 1px 0 rgba(0,0,0,.4); flex: 1; }
 .chat-titlebar .chat-btns { display: flex; gap: 3px; }
-.chat-min, .chat-clear {
+.chat-min, .chat-clear, .chat-ai {
   font: inherit; font-size: 10px; line-height: 1; cursor: pointer; color: #000;
   background: var(--silver); border: var(--raise); border-color: var(--raise-c);
   box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #000;
   min-width: 20px; height: 16px; padding: 0 4px; display: grid; place-items: center;
 }
-.chat-min:active, .chat-clear:active { border-color: var(--sink-c); box-shadow: inset 1px 1px 0 #000, inset -1px -1px 0 #fff; }
+.chat-min:active, .chat-clear:active, .chat-ai:active { border-color: var(--sink-c); box-shadow: inset 1px 1px 0 #000, inset -1px -1px 0 #fff; }
+.chat-ai:disabled { color: var(--gray); cursor: not-allowed; }
+.chat-ai.active { background: #c8f0c8; border-color: var(--good); color: var(--good); font-weight: 700; }
+.chat-ai.err { background: #ffdede; border-color: var(--over); color: var(--over); }
+.chatmsg.streaming .cursor { animation: blink 1s step-start infinite; color: var(--title-a); }
+@keyframes blink { 50% { opacity: 0; } }
 .chat-body { padding: 6px; display: flex; flex-direction: column; gap: 6px; }
 .chatlog {
   height: 190px; overflow-y: auto; padding: 5px 6px;
