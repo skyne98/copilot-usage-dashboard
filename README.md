@@ -112,5 +112,25 @@ src/config.js        loads & validates config.json
 src/github.js        GitHub Copilot Metrics API client (follows report download links)
 src/transform.js     normalizes raw responses into the UI shape
 public/              index.html · styles.css · app.js · charts.js (SVG charts)
+                     clippy.js · chatbot.js · chatbot-engine.js (Clippy + rule-based bot)
 sample-data.json     bundled demo data
+test/                chatbot.test.js · fixtures.js (Bun unit tests for the rule engine)
 ```
+
+## Tests
+
+The rule-based chatbot engine (`public/chatbot-engine.js`) is unit-tested with
+[Bun](https://bun.sh) — 166 tests / 472 assertions covering helpers, the knowledge
+base, intent routing, live-data replies, graceful no-data, math, games, and
+robustness.
+
+> **Bun is required to run the tests** (they use `bun:test`). The engine itself is
+dependency-free and loads fixtures via `readFileSync` (no import attributes), so
+it works on Node 18+ too — only the test runner needs Bun.
+
+```bash
+bun test      # or: npm test (which runs `bun test`)
+```
+
+Clippy (`public/clippy.js`) loads [`clippyjs@0.1.0`](https://www.npmjs.com/package/clippyjs)
+from CDN at runtime; if the CDN is unreachable, the dashboard still works without him.
